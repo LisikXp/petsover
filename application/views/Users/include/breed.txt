@@ -1,0 +1,287 @@
+  	Australian greyhound
+  	Australian Hound
+  	Australian Shepherd
+  	Australian Cattle Dog
+  	Aussie
+  	Australian Silky Terrier
+  	Azawak
+  	Ainu
+  	Akita
+  	Alpine taksoobrazny Brakk
+  	Alaskan Malamute
+  	American Blue Gascon Hound
+  	American foxhound
+  	American raccoon hound
+  	American Bull Terrier
+  	American Cocker
+  	American Pit Bull
+  	American Staffordshire Terrier
+  	American harer
+  	Anatolian Shepherd
+  	English raccoon hound
+  	English Shepherd
+  	English Pointing
+  	English Bulldog
+  	English Setter
+  	English Springer Spaniel
+  	English Toy Spaniel
+  	English Toy
+  	English Foxhound
+  	Appenzeller
+  	Apso
+  	Artezian-Norman Basset
+  	Artuazskaya Hound
+  	Arezhskaya Hound
+  	Consumption Shepherd
+  	Afghan Hound
+  	African sand dog
+  	Аффен-пинчер 	Affen pinscher
+  	Баварская горная гончая 	Bavarian Mountain Hound
+  	Балканская гончая 	Balkan Hound
+  	Басенджи 	Basenji
+  	Баскская овчарка 	Basque Shepherd
+  	Бассет 	Basset
+  	Бассет-хаунд 	Basset Hound
+  	Бедлингтонтерьер 	Bedlingtonterer
+  	Белый высокогорный терьер 	Alpine White Terrier
+  	Бельгийская овчарка 	Belgian Shepherd
+  	Бельгийский бракк 	Belgian Brakk
+  	Бернская гончая 	Berne Hound
+  	Бернская пастушья собака 	Berne Cattle Dog
+  	Бигль 	Beagle
+  	Бигль-харьер 	Beagle-harer
+  	Бийи 	Biya
+  	Бишон-лион 	Bichon-Lyon
+  	Бишон-фризе 	Bichon Vries
+  	Бладхаунд 	Bloodhound
+  	Бобтейл 	Bobtail
+  	Богемский терьер 	Bohemian Terrier
+  	Боксер 	Boxer
+  	Большая англо-французская гончая 	Most Anglo-French Hound
+  	Большая гасконско-сентонжская гончая 	Large-sentonzhskaya Gascon Hound
+  	Большая голубая гасконская гончая 	Great Blue Gascon Hound
+  	Большая древесная гончая 	Large tree hound
+  	Большая испанская гончая 	Large Spanish Hound
+  	Большая швейцарская горная пастушья собака 	Great Swiss Mountain and Cattle Dog
+  	Большой зенненхунд 	Big Mountain Dog
+  	Большой мюнстерлендер 	Big myunsterlender
+  	Большой португальский поденгу 	Large Portuguese podengu
+  	Бонготерьер 	Bongoterer
+  	Бордер-колли 	Border-collie
+  	Бордертерьер 	Borderterer
+  	Бордоский дог 	Dogue de Bordeaux
+  	Борзые со стоячими ушами 	Greyhounds with erect ears
+  	Бородатая колли 	Bearded Collie
+  	Босерон 	Beauceron
+  	Боснийская грубошерстная гончая 	Bosnian coarse-wooled Hound
+  	Бостонский терьер 	Boston Terrier
+  	Брандл-бракк 	Brundle Brakk
+  	Бриар 	Briard
+  	Брюссельский гриффон 	Brussels Griffon
+  	Бульмастиф 	Bullmastiff
+  	Бультерьер 	Bullterrier
+  	Вандейский бассет-гриффон 	Basset Griffon Vendee
+  	Вельштерьер 	Velshterer
+  	Венгерская овчарка 	Hungarian sheepdog
+  	Венгерский кувач 	Hungarian kuvach
+  	Вестготская собака 	West Gothic Dog
+  	Вестфальский таксообразный бракк 	Westphalian taksoobrazny Brakk
+  	Вислоухие борзые 	Fold Greyhounds
+  	Волчий шпиц 	Wolf Spitz
+  	Вольпино 	Volpino
+  	Восточноевропейская овчарка 	East European Shepherd
+  	Выдровая гончая 	Otter hound
+  	Гаванский бишон 	Havana Bichon
+  	Гамильтонстеваре 	Gamiltonstevare
+  	Ганноверская гончая 	Hanover Hound
+  	Герта-пойнтер 	Gert-Pointer
+  	Гладкошерстный ретривер 	Smooth Retriever
+  	Глен-оф-имаал-терьер 	Glen-of-imaal Terrier
+  	Голая собака инков 	Inca Hairless Dog
+  	Голландская овчарка 	Dutch Shepherd Dog
+  	Голубой гасконский бассет 	Blue Gascony Basset
+  	Голубой пикардийский эпаньоль 	Blue Picardie epanol
+  	Гончая Плотта 	Hound Plotta
+  	Гончая Стефана 	Hound Stephen
+  	Гончая Шиллера 	Schiller Hound
+  	Гончие 	Canes
+  	Горная гончая 	Mountain Hound
+  	Готтентотская собака 	Hottentot dog
+  	Грейхаунд 	Greyhound
+  	Греческая заячья гончая 	Greek rabbit hound
+  	Гриффон 	Griffon
+  	Далматин 	Dalmatian
+  	Датская таксообразная гончая 	Danish Dachsbracke
+  	Датский брохольмер 	Danish broholmer
+  	Денди-динмонт-терьер 	Dandie Dinmont Terrier
+  	Джек-рассел-терьер 	Jack Russell Terrier
+  	Динго 	Dingo
+  	Дирхаунд 	Deerhound
+  	Доберман 	Doberman
+  	Древер 	Drever
+  	Дункер 	Dunker
+  	Енотовая гончая 	Raccoon hound
+  	Желтая с черной маской южная гончая 	Yellow with a black mask southern hound
+  	Западносибирская лайка 	West Siberian Laika
+  	Зауэрландский бракк 	Zauerlandsky Brakk
+  	Золотистый ретривер 	Golden Retriever
+  	Иллирийская овчарка 	Illyria Shepherd
+  	Ирландский водяной спаниель 	Irish Water Spaniel
+  	Ирландский волкодав 	Irish Wolfhound
+  	Ирландский сеттер 	Irish Setter
+  	Ирландский терьер 	Irish Terrier
+  	Исландская овчарка 	Icelandic Sheepdog
+  	Испанский гальго 	Spanish galgo
+  	Испанский мастиф 	Spanish Mastiff
+  	Истрийская гончая 	Istrian Hound
+  	Итальянская гончая 	Italian Hound
+  	Итальянская левретка 	Italian whippet
+  	Йемтхунд 	Yemthund
+  	Йоркширтерьер 	Yorkshirterer
+  	Кавказская овчарка 	Caucasian Shepherd
+  	Кай 	Kai
+  	Камчатская ездовая 	Kamchatka sled
+  	Канаанская собака 	Kanaanskaya dog
+  	Карело-финская лайка 	Karelian-Finnish Laika
+  	Карельская медвежья собака 	Karelian Bear Dog
+  	Карликовая хохлатая собачка 	Dwarf crested dog
+  	Карликовый пинчер 	Miniature Pinscher
+  	Карликовый пудель 	Dwarf poodle
+  	Карликовый шпиц 	Dwarf Spitz
+  	Каталонская овчарка 	Catalan Sheepdog
+  	Кеесхонд 	Keeshond
+  	Келпи 	Kelpie
+  	Кернтерьер 	Kernterer
+  	Керри-бигль 	Kerry Beagle
+  	Керри-блю-терьер 	Kerry Blue Terrier
+  	Кисю 	Kisyu
+  	Китайский шарпей 	Chinese Shar
+  	Клумбер-спаниель 	Klumber Spaniel
+  	Коикерхондье 	Koikerhonde
+  	Лабрадор 	Labrador
+  	Лабрадорский ретривер 	Labrador Retriever
+  	Ландсир 	Landsir
+  	Лапландский шпиц 	Lapland spitz
+  	Латвийская гончая 	Latvian Hound
+  	Лауфхунд 	Laufhund
+  	Левеск 	Levesque
+  	Лейклендтерьер 	Leyklendterer
+  	Леонбергер 	Leonberger
+  	Леопардовая гончая 	Leopard Hound
+  	Леопардовая собака Катахулы 	Leopard dog Katahuly
+  	Литовская гончая 	Lithuanian Hound
+  	Лхасский апсо 	Lhasa apso
+  	Люцернер лауфхунд 	Lyutserner laufhund
+  	Мадьяр-агар 	Magyar agar
+  	Малая англо-французская гончая 	Low Anglo-French Hound
+  	Малый вандейский бассет-гриффон 	Small Basset Griffon Vendee
+  	Мальтийская болонка 	Maltese
+  	Манчестерский терьер 	Manchester Terrier
+  	Маремма 	Maremma
+  	Мастино неаполитано 	Mastino Neapolitana
+  	Мастиф 	Mastiff
+  	Миниатюрный пинчер 	Miniature Pinscher
+  	Миттельшнауцер 	Schnauzer
+  	Мопс 	Pug
+  	Московская сторожевая 	Moscow watch
+  	Московский тойтерьер 	Moscow Toy
+  	Муди 	Moody
+  	Мягкошерстный пшеничный терьер 	Soft Coated Wheaten Terrier
+  	Неаполитанский мастиф 	Neapolitan Mastiff
+  	Немецкая грубошерстная легавая 	German coarse-wooled pointer
+  	Немецкая длинношерстная легавая 	German longhaired pointer
+  	Немецкая овчарка 	German Shepherd
+  	Немецкий дог 	German Dog
+  	Немецкий охотничий терьер 	German hunting terrier
+  	Ненецкая оленегонная лайка 	Nenets Laika olenegonnaya
+  	Новошотландский ретривер 	Novoshotlandsky Retriever
+  	Норботтен-шпиц 	Norrbotten Spitz -
+  	Норвежский бухунд 	Norwegian buhund
+  	Норвичтерьер 	Norvichterer
+  	Норфолктерьер 	Norfolkterer
+  	Ньюфаундленд 	Newfoundland
+  	Ойразир 	Oyrazir
+  	Оттерхаунд 	Otterhaund
+  	Палевый бретонский бассет-гриффон 	Fawn Breton Basset Griffon
+  	Папильон и фален 	Papillon and Fahlen
+  	Пекинес 	Pekingese
+  	Перуанская орхидея инков 	Peruvian Inca Orchid
+  	Пикардийская овчарка 	Picardie Shepherd
+  	Пинчер арлекин 	Harlequin Pinscher
+  	Пиренейская горная собака 	Pyrenean mountain dog
+  	Пиренейская овчарка 	Pyrenean Shepherd
+  	Пиренейский мастиф 	Pyrenean Mastiff
+  	Пойнтер 	Pointer
+  	Польская низинная овчарка 	Polish lowland sheepdog
+  	Польская подгалянская овчарка 	Polish podgalyanskaya Shepherd
+  	Португальская гончая 	Portuguese Hound
+  	Португальская горная овчарка 	Portuguese Mountain Shepherd
+  	Прямошерстный ретривер 	Pryamosherstny Retriever
+  	Пуатвен 	Puatven
+  	Пудель 	Poodle
+  	Пудель-пойнтер 	Poodle-Pointer
+  	Пули 	Bullets
+  	Пуми 	Pumi
+  	Растреадор бразилейру 	Rastreador Brasileiro
+  	Рафейру ду Алентехо 	Rafeyru do Alentejo
+  	Риджбек 	Ridgeback
+  	Ризеншнауцер 	Giant
+  	Ротвейлер 	Rottweiler
+  	Румынская овчарка 	Romanian Shepherd
+  	Русская борзая 	Russian wolfhound
+  	Русская цветная болонка 	Russian color spaniel
+  	Русский охотничий спаниель 	Russian Spaniel
+  	Русский черный терьер 	Black Russian Terrier
+  	Русско-европейская лайка 	Russian-European Laika
+  	Салюки 	Saluki
+  	Самоедская лайка 	Samoyed Laika
+  	Сенбернар 	St. Bernard
+  	Сеттер-гордон 	Gordon Setter
+  	Силихэмтерьер 	Silihemterer
+  	Скайтерьер 	Skayterer
+  	Скотчтерьер 	Skotchterer
+  	Слюги 	Slyugi
+  	Смоландстеваре 	Smolandstevare
+  	Среднеазиатская овчарка 	Central Asian Shepherd
+  	Стаффордширский бультерьер 	Staffordshire Bull Terrier
+  	Стаффордширский терьер 	Staffordshire Terrier
+  	Суссекс-спаниель 	Sussex Spaniel
+  	Такса 	Dachshund
+  	Татранская овчарка 	Tatranska Shepherd
+  	Тибетский мастиф 	Khyi
+  	Тибетский спаниель 	Tibetan Spaniel
+  	Тибетский терьер 	Tibetan Terrier
+  	Той-пудель 	Toy-poodle
+  	Тоса-ину 	Tosa Inu
+  	Уиппет 	Whippet
+  	Уэльский терьер 	Wales Terrier
+  	Уэст-хайленд-уайт-терьер 	West Highland White Terrier
+  	Фараонова собака 	Pharaoh dog
+  	Филд-спаниель 	Field Spaniel
+  	Фландрский бувье 	Bouvier des Flanders
+  	Фокстерьер 	Fox
+  	Французская болонка 	French spaniel
+  	Французский бульдог 	French Bulldog
+  	Хердер 	Herder
+  	Цверкшнауцер 	Tsverkshnautser
+  	Чау-чау 	Chow-chow
+  	Черноподпалый кунхаунд 	Black and tan kunhaund
+  	Чесапик-бей-ретривер 	Chesapeake Bay Retriever
+  	Чешский терьер 	Czech Terrier
+  	Чихуахуа 	Chihuahua
+  	Чукотская ездовая 	Chukchi sled
+  	Шапендус 	Shapendus
+  	Швейцарская юрская гончая 	Swiss Jurassic Hound
+  	Шелти 	Sheltie
+  	Ши-тцу 	Shih Tzu
+  	Шипперке 	Shipperke
+  	Шнауцер 	Schnauzer
+  	Шотландский терьер 	Scottish Terrier
+  	Штирский бракк 	Shtirsky Brakk
+  	Эльгхунд 	Elghund
+  	Эрдельтерьер 	Airedale
+  	Эскимосская лайка 	Husky
+  	Эштрельская овчарка 	Eshtrelskaya Shepherd
+  	Южнорусская овчарка 	South Russian Shepherd Dog
+  	Японский спаниель 	Japanese Spaniel
+  	Японский хин 	Japanese Chin
