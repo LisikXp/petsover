@@ -13,6 +13,7 @@ $helper = $fb->getRedirectLoginHelper();
 
 try {
   $accessToken = $helper->getAccessToken();
+
 } catch(Facebook\Exceptions\FacebookResponseException $e) {
   // When Graph returns an error
   echo 'Graph returned an error: ' . $e->getMessage();
@@ -38,6 +39,7 @@ if (! isset($accessToken)) {
 }
 
 try {
+
   // Returns a `Facebook\FacebookResponse` object
   $response = $fb->get('/me?fields=id,name,email', $accessToken);
 } catch(Facebook\Exceptions\FacebookResponseException $e) {
@@ -53,8 +55,8 @@ $user = $response->getGraphUser();
 /*print_r($user);
 echo 'Name: ' . $user['name'];
 echo 'email: ' . $user['email'];
-echo 'id: ' . $user['id'];
-*/
+echo 'id: ' . $user['id'];*/
+
 $email = $user['email'];
 $name = $user['name'];
 

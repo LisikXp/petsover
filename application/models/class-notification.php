@@ -1,6 +1,6 @@
 <?php
 
-Class Notification{
+Class Class_Notification{
 
 	public $user_from;
 	public $user_owner;
@@ -28,8 +28,8 @@ Class Notification{
 	}
 
 	function remove_active(){
-		if (($_SESSION['family']) != null) {
-			$user_id = $_SESSION['family'];
+		if (($_SESSION['family_id']) != null) {
+			$user_id = $_SESSION['family_id'];
 		} else {
 			$user_id = $_SESSION['user_id'];
 		}
@@ -46,17 +46,17 @@ Class Notification{
 	function get_event(){
 		$family = new Family;
 		$myfamily = $family->get_my_family_members();
-		if (($_SESSION['family']) != null) {
-			$user_id = $_SESSION['family'];
+		if (($_SESSION['family_id']) != null) {
+			$user_id = $_SESSION['family_id'];
 
 		} else {
 			$user_id = $_SESSION['user_id'];
 			
 		}
 		$active = 1;
-		$new_myfamily = array_merge(array_diff($myfamily, array('')));
-		for ($r=0; $r < count($new_myfamily); $r++) { 
-			$ret[$r] = "AND user_from <>'$new_myfamily[$r]'";
+	
+		for ($r=0; $r < count($myfamily); $r++) { 
+			$ret[$r] = "AND user_from <>'$myfamily[$r]'";
 		}
 		$ter = implode(' ', $ret);
 		$ter = "user_owner='$user_id' AND active='$active' AND user_from <>'$user_id' " . $ter;
@@ -77,16 +77,17 @@ Class Notification{
 		$users = new Users;
 		$wall = new Wall;
 		$family = new Family;
+		$main_url = new Main_url;
 		$myfamily = $family->get_my_family_members();
-		if (($_SESSION['family']) != null) {
-			$user_id = $_SESSION['family'];
+		if (($_SESSION['family_id']) != null) {
+			$user_id = $_SESSION['family_id'];
 		} else {
 			$user_id = $_SESSION['user_id'];
 		}
 		$active = 1;
-		$new_myfamily = array_merge(array_diff($myfamily, array('')));
-		for ($r=0; $r < count($new_myfamily); $r++) { 
-			$ret[$r] = "AND user_from <>'$new_myfamily[$r]'";
+	
+		for ($r=0; $r < count($myfamily); $r++) { 
+			$ret[$r] = "AND user_from <>'$myfamily[$r]'";
 		}
 		$ter = implode(' ', $ret);
 		$ter = "user_owner='$user_id' AND user_from <>'$user_id' " . $ter . ' ORDER BY timevent DESC LIMIT 10';
@@ -98,23 +99,12 @@ Class Notification{
 				$uid = $arr['user_from'];
 				$post_id = $arr['post'];
 				$user_event = $users->users($uid);
-				if (!is_numeric($uid)) {
-					$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['f_photo'];
-					$dname = $user_event['f_name'];
-					if ($user_event['f_photo'] == null) {
-						$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['maine_photo'];
-						$dname = $user_event['user_name'];
-					} 
-				} else {
-					$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['user_photo'];
-					$dname = $user_event['dog_name'];
-					if ($user_event['user_photo'] == null) {
+
+					$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['photo'];
+					$dname = $user_event['name'];
+					if ($user_event['photo'] == null) {
 						$fotos = "http://" . $_SERVER['HTTP_HOST']. "/img/avatar/no-photo@2x.png";
 					}
-					if ($user_event['dog_name'] == null) {
-						$dname = $user_event['user_name'];
-					}
-				}
 				
 				$wall_attach = $wall->get_attach_post($post_id);
 				$attachment = $wall_attach['attachment'];
@@ -122,12 +112,12 @@ Class Notification{
 				<li class="list-item follow-dog list-notifi-event event-active" id="list-notifi-event">
 					<div class="flex-wrapper" id="<?= $post_id;?>">
 						<div class="event-dog-image">
-							<a href="user?id=<?= $uid; ?>">
+							<a href="<?= $main_url->get_url($uid); ?>">
 								<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 							</a>
 						</div>
 						<div class="follow-dog-description">
-							<a href="user?id=<?= $uid; ?>">
+							<a href="<?= $main_url->get_url($uid); ?>">
 								<p class="follow-dog-breed">
 									<?php echo $dname; ?>
 								</p>
@@ -181,12 +171,12 @@ Class Notification{
 					<li class="list-item follow-dog list-notifi-event event-active" id="list-notifi-event">
 						<div class="flex-wrapper" id="<?= $post_id;?>">
 							<div class="event-dog-image">
-								<a href="user?id=<?= $uid; ?>">
+								<a href="<?= $main_url->get_url($uid); ?>">
 									<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 								</a>
 							</div>
 							<div class="follow-dog-description">
-								<a href="user?id=<?= $uid; ?>">
+								<a href="<?= $main_url->get_url($uid); ?>">
 									<p class="follow-dog-breed">
 										<?php echo $dname; ?>
 									</p>
@@ -239,12 +229,12 @@ Class Notification{
 						<li class="list-item follow-dog list-notifi-event event-active" id="list-notifi-event">
 							<div class="flex-wrapper">
 								<div class="event-dog-image">
-									<a href="user?id=<?= $uid; ?>">
+									<a href="<?= $main_url->get_url($uid); ?>">
 										<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 									</a>
 								</div>
 								<div class="follow-dog-description">
-									<a href="user?id=<?= $uid; ?>">
+									<a href="<?= $main_url->get_url($uid); ?>">
 										<p class="follow-dog-breed">
 											<?php echo $dname; ?>
 										</p>
@@ -259,12 +249,12 @@ Class Notification{
 						<li class="list-item follow-dog list-notifi-event event-active" id="list-notifi-event">
 							<div class="flex-wrapper">
 								<div class="event-dog-image">
-									<a href="user?id=<?= $uid; ?>">
+									<a href="<?= $main_url->get_url($uid); ?>">
 										<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 									</a>
 								</div>
 								<div class="follow-dog-description">
-									<a href="user?id=<?= $uid; ?>">
+									<a href="<?= $main_url->get_url($uid); ?>">
 										<p class="follow-dog-breed">
 											<?php echo $dname; ?>
 										</p>
@@ -279,12 +269,12 @@ Class Notification{
 						<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 							<div class="flex-wrapper" id="<?= $post_id;?>">
 								<div class="event-dog-image">
-									<a href="user?id=<?= $uid; ?>">
+									<a href="<?= $main_url->get_url($uid); ?>">
 										<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 									</a>
 								</div>
 								<div class="follow-dog-description">
-									<a href="user?id=<?= $uid; ?>">
+									<a href="<?= $main_url->get_url($uid); ?>">
 										<p class="follow-dog-breed">
 											<?php echo $dname; ?>
 										</p>
@@ -337,12 +327,12 @@ Class Notification{
 							<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 								<div class="flex-wrapper" id="<?= $post_id;?>">
 									<div class="event-dog-image">
-										<a href="user?id=<?= $uid; ?>">
+										<a href="<?= $main_url->get_url($uid); ?>">
 											<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 										</a>
 									</div>
 									<div class="follow-dog-description">
-										<a href="user?id=<?= $uid; ?>">
+										<a href="<?= $main_url->get_url($uid); ?>">
 											<p class="follow-dog-breed">
 												<?php echo $dname; ?>
 											</p>
@@ -396,12 +386,12 @@ Class Notification{
 								<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 									<div class="flex-wrapper">
 										<div class="event-dog-image">
-											<a href="user?id=<?= $uid; ?>">
+											<a href="<?= $main_url->get_url($uid); ?>">
 												<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 											</a>
 										</div>
 										<div class="follow-dog-description">
-											<a href="user?id=<?= $uid; ?>">
+											<a href="<?= $main_url->get_url($uid); ?>">
 												<p class="follow-dog-breed">
 													<?php echo $dname; ?>
 												</p>
@@ -416,12 +406,12 @@ Class Notification{
 								<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 									<div class="flex-wrapper">
 										<div class="event-dog-image">
-											<a href="user?id=<?= $uid; ?>">
+											<a href="<?= $main_url->get_url($uid); ?>">
 												<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 											</a>
 										</div>
 										<div class="follow-dog-description">
-											<a href="user?id=<?= $uid; ?>">
+											<a href="<?= $main_url->get_url($uid); ?>">
 												<p class="follow-dog-breed">
 													<?php echo $dname; ?>
 												</p>
@@ -453,16 +443,17 @@ Class Notification{
 						$users = new Users;
 						$wall = new Wall;
 						$family = new Family;
+						$main_url = new Main_url;
 						$myfamily = $family->get_my_family_members();
-						if (($_SESSION['family']) != null) {
-							$user_id = $_SESSION['family'];
+						if (($_SESSION['family_id']) != null) {
+							$user_id = $_SESSION['family_id'];
 						} else {
 							$user_id = $_SESSION['user_id'];
 						}
 						$active = 1;
-						$new_myfamily = array_merge(array_diff($myfamily, array('')));
-						for ($r=0; $r < count($new_myfamily); $r++) { 
-							$ret[$r] = "AND user_from <>'$new_myfamily[$r]'";
+					
+						for ($r=0; $r < count($myfamily); $r++) { 
+							$ret[$r] = "AND user_from <>'$myfamily[$r]'";
 						}
 						$ter = implode(' ', $ret);
 						$ter = "user_owner='$user_id' AND user_from <>'$user_id' " . $ter . ' ORDER BY timevent DESC LIMIT 20';
@@ -475,24 +466,13 @@ Class Notification{
 								$post_id = $arr['post'];
 								$timevent = $arr['timevent'];
 								$user_event = $users->users($uid);
-								if (!is_numeric($uid)) {
-									$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['f_photo'];
-									$dname = $user_event['f_name'];
-									if ($user_event['f_photo'] == null) {
-										$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['maine_photo'];
-										$dname = $user_event['user_name'];
-									} 
-								} else {
-									$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['user_photo'];
-									$dname = $user_event['dog_name'];
-									if ($user_event['user_photo'] == null) {
+				
+									$fotos = "http://" . $_SERVER['HTTP_HOST']. '/img/avatar/' . $user_event['photo'];
+									$dname = $user_event['name'];
+									if ($user_event['photo'] == null) {
 										$fotos = "http://" . $_SERVER['HTTP_HOST']. "/img/avatar/no-photo@2x.png";
 									}
-									if ($user_event['dog_name'] == null) {
-										$dname = $user_event['user_name'];
-									}
-								}
-
+										
 								$date = new DateTime();
 								$date->setTimestamp($timevent);
 								$gdate = $date->format("d F Y");
@@ -507,12 +487,12 @@ Class Notification{
 								<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 									<div class="flex-wrapper" id="<?= $post_id;?>">
 										<div class="event-dog-image-event">
-											<a href="user?id=<?= $uid; ?>">
+											<a href="<?= $main_url->get_url($uid); ?>">
 												<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 											</a>
 										</div>
 										<div class="follow-dog-description">
-											<a href="user?id=<?= $uid; ?>">
+											<a href="<?= $main_url->get_url($uid); ?>">
 												<p class="follow-dog-breed">
 													<?php echo $dname; ?>
 												</p>
@@ -582,12 +562,12 @@ Class Notification{
 									<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 										<div class="flex-wrapper" id="<?= $post_id;?>">
 											<div class="event-dog-image-event">
-												<a href="user?id=<?= $uid; ?>">
+												<a href="<?= $main_url->get_url($uid); ?>">
 													<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 												</a>
 											</div>
 											<div class="follow-dog-description">
-												<a href="user?id=<?= $uid; ?>">
+												<a href="<?= $main_url->get_url($uid); ?>">
 													<p class="follow-dog-breed">
 														<?php echo $dname; ?>
 													</p>
@@ -658,12 +638,12 @@ Class Notification{
 										<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 											<div class="flex-wrapper">
 												<div class="event-dog-image-event">
-													<a href="user?id=<?= $uid; ?>">
+													<a href="<?= $main_url->get_url($uid); ?>">
 														<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 													</a>
 												</div>
 												<div class="follow-dog-description">
-													<a href="user?id=<?= $uid; ?>">
+													<a href="<?= $main_url->get_url($uid); ?>">
 														<p class="follow-dog-breed">
 															<?php echo $dname; ?>
 														</p>
@@ -695,12 +675,12 @@ Class Notification{
 										<li class="list-item follow-dog list-notifi-event" id="list-notifi-event">
 											<div class="flex-wrapper">
 												<div class="event-dog-image">
-													<a href="user?id=<?= $uid; ?>">
+													<a href="<?= $main_url->get_url($uid); ?>">
 														<img src="<?php echo $fotos; ?>" alt="dog picture" id="event-dog-image_<?php echo $dname; ?>">
 													</a>
 												</div>
 												<div class="follow-dog-description">
-													<a href="user?id=<?= $uid; ?>">
+													<a href="<?= $main_url->get_url($uid); ?>">
 														<p class="follow-dog-breed">
 															<?php echo $dname; ?>
 														</p>

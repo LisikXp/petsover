@@ -35,7 +35,7 @@
                         <fieldset>
                             <div class="settings-row">
                                 <label for="settings-username"> Email Address </label>
-                                <input type="text" class="input" id="settings-email" placeholder="Username" value="<?= $myaacountuser['email'];?>" name="email">
+                                <input type="text" class="input" id="settings-email" placeholder="User email" value="<?= $myowner['email'];?>" name="email">
                             </div>
                         </fieldset>
                         <h3 class="heading-h3 category-name no-margin category-name-mt">
@@ -195,7 +195,8 @@
         $( function() {
             $("#datepicker").datepicker({
              autoclose: true, 
-             todayHighlight: true
+             todayHighlight: true,
+             startDate: new Date('1980-01-01')
          }).datepicker('update', new Date());
 
             function owner_readURL(input) { /* превью картинки*/
@@ -247,12 +248,12 @@
                         <div class="profile-edit-image-container">
                          <img id="owner_image" class="image image-photo-bg" src="<?= $maine_photo;?>" />
                          <div class="image-container-default-bg">
-
-                             <label class="btn btn-default btn-sm center-block btn-file">
+<img class="image my-profile-image-owner" src="/img/photo-camera.svg" />
+                             <!-- <label class="btn btn-default btn-sm center-block btn-file">
                                  <img class="image" src="/img/photo-camera.svg" />   
                                  <i class="fa fa-upload fa-2x" aria-hidden="true"></i>
                                  <input id="owner_userfile" type="file" name="filename" size="5000" style="display: none;">
-                             </label>
+                             </label> -->
                          </div>
                      </div>
                      <fieldset>
@@ -261,7 +262,7 @@
                          <input type="text" class="input" id="owner-settings-username" placeholder="Name" value="<?= $owner;?>">
                      </div>
                      <div class="settings-row settings-row-half">
-                         <input type="text" class="input" id="signup-location" placeholder="Location" value="<?= $location;?>">
+                         <input type="text" class="input" id="signup-location" placeholder="Location" value="<?= $location_owner;?>">
                      </div>
                      <div class="settings-row settings-row-with-link">
                          <p class="link link-green" onclick="getLocation()">Define my location</p>
@@ -292,11 +293,12 @@
                     <div class="profile-edit-image-container">
                         <img id="edit_famiy_image" class="image image-photo-bg" src="<?= $photo;?>"/>
                         <div class="image-container-default-bg">
-                           <label class="btn btn-default btn-sm center-block btn-file">
+                           <!-- <label class="btn btn-default btn-sm center-block btn-file">
                              <img class="image" src="/img/photo-camera.svg" />   
                              <i class="fa fa-upload fa-2x" aria-hidden="true"></i>
                              <input id="edit_famiy_userfile" type="file" name="filename" size="5000" style="display: none;">
-                         </label>
+                         </label> -->
+                         <img class="image my-profile-image-family" src="/img/photo-camera.svg" />
                      </div>
                  </div>
                  <fieldset>
@@ -322,43 +324,6 @@
 </div>
 
 
-
-
-<!-- Optimized loading JS Start -->
-
-       <!--  <script>
-           var scr = {
-               "scripts": [{
-                   "src": "js/libs.min.js",
-                   "async": false
-               }, {
-                   "src": "js/common.js",
-                   "async": false
-               }]
-           };
-           ! function(t, n, r) {
-               "use strict";
-               var c = function(t) {
-                   if ("[object Array]" !== Object.prototype.toString.call(t)) return !1;
-                   for (var r = 0; r < t.length; r++) {
-                       var c = n.createElement("script"),
-                       e = t[r];
-                       c.src = e.src, c.async = e.async, n.body.appendChild(c)
-                   }
-                   return !0
-               };
-               t.addEventListener ? t.addEventListener("load", function() {
-                   c(r.scripts);
-               }, !1) : t.attachEvent ? t.attachEvent("onload", function() {
-                   c(r.scripts)
-               }) : t.onload = function() {
-                   c(r.scripts)
-               }
-           }(window, document, scr);
-       </script> -->
-
-
-       <!-- Optimized loading JS End -->
 
    </body>
 

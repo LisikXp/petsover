@@ -9,7 +9,7 @@
 				<div class="tile">
 					<h3 class="heading heading-h3 heading-no-margin">WHO TO FOLLOW</h3>
 					<hr class="hr hr-full-width hr-body">
-					<ul class="list followers">
+					<ul class="list followers" id="discover_list">
 						<?php
 						
 						$valuation->get_all_list_users(0, 10);

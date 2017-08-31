@@ -4,15 +4,19 @@
 		<div class="row">
 			<div class="col-sm-3  col-sm-3-custom-left">
 				
-				<?php require_once "sidebar/sidebar.php"; ?>
+				<?php require_once "sidebar/sidebar-main.php"; ?>
 				
 			</div>
 			<div class="col-sm-6 col-sm-6-custom">
-				<?php if ($get_id == $mypage) {?>
-				<div class=" tile"><?php
-					require_once "new-post.php";?>
-				</div> 
-				<?php	} ?>
+				<?php if ($get_id == $mypage) {
+					if ($_SESSION['Guest']) {
+
+					} else { ?>
+					<div class=" tile">
+						<?php 	require_once "new-post.php";?>
+					</div>
+					<?php	}
+				} ?>
 
 				<ul class="my_feed_list" id="user_wall" data-user="<?= $get_id;?>">
 					<?php
@@ -47,13 +51,13 @@
 							e.type="text/javascript";
 							document.getElementsByTagName("head")[0].appendChild(e); 
 						}
-						get_feedcount();
+						//get_feedcount();
 						function get_feedcount(){
 							var data =  new FormData();
 							data.append("autofeed", 'true');
 
 							$.ajax({
-								url: "setpost",
+								url: "/application/Request/setpost.php",
 								type: "POST",
 								data: data,
 								async: true, 
@@ -61,8 +65,8 @@
 								processData: false,
 								contentType: false,
 								success: function (data) {
-									$('.my_feed_list').empty();
-									$('.my_feed_list').append(data);
+									//$('.my_feed_list').empty();
+									$('.my_feed_list').html(data);
 									
 									pool_event();
 									dhtmlLoadScript("https://cdn.jsdelivr.net/sharer.js/latest/sharer.min.js");

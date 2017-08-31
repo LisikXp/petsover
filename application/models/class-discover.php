@@ -35,35 +35,6 @@ class Users_Discover{
 	public $start = 0;
 	public $max;
 
-	function get_all_users_no_family($start, $limit){
-		
-		$uid = $_SESSION['user_id'];
-		$result = mysql_query("SELECT * FROM users WHERE family=''");
-		if(mysql_num_rows($result) != 0 ){ 
-			for ($i=0; $i < mysql_num_rows($result); $i++) {
-				$row[] =  mysql_fetch_assoc($result);
-				//print_r(mysql_fetch_assoc($result));
-			}
-			return $row;
-		}
-		
-	}
-
-
-	function get_all_family($start, $limit){
-
-		$result = mysql_query("SELECT * FROM family");
-		if(mysql_num_rows($result) != 0 ){ 
-
-			for ($i=0; $i < mysql_num_rows($result); $i++) { 
-				$row[] = mysql_fetch_assoc($result);
-
-			}
-			return $row;
-
-		}
-	}
-
 	function get_wall_discover(){
 		$limit = $this->limit;
 		$start = $this->start;
@@ -74,6 +45,10 @@ class Users_Discover{
 			$breed_loc = "breed='$breed' AND location='$location'";
 			$this->all_serch_account($breed_loc, $start, $limit);
 
+		}elseif (isset($_GET['search'])) {
+			$search = $_GET['search'];
+
+			$this->get_all_users($search, $start, $limit);
 		}elseif (isset($_GET['location'])) {
 			$str_location = str_replace('+', ' ', $_GET['location']);
 				//echo 'Location';
@@ -81,10 +56,13 @@ class Users_Discover{
 			echo "<hr>";
 		}elseif(isset($_GET['breed'])) {
 			$breed = $_GET['breed'];
-			
-			$breed_loc = "breed='$breed'";
+			if ($breed != 'All') {
+				$breed_loc = "breed='$breed'";
+			} else {
+				$breed_loc = "breed<>''";
+			}
 			$this->all_serch_account($breed_loc, $start, $limit);
-			
+
 		}elseif (isset($_GET['breed']) && isset($_GET['location']) && isset($_GET['agefrom']) && isset($_GET['ageto'])) {
 			
 			$datefrom = date("d-m-Y", mktime(0, 0, 0, date('m'), date('d'), date('Y') - $_GET['agefrom']));
@@ -108,11 +86,12 @@ class Users_Discover{
 
 			$breed_loc = "birthday<='$stragefrom' AND birthday>='$strageto'";
 			$this->all_serch_account($breed_loc, $start, $limit);
-		
+
 
 		} else{
-			$this->get_all_account($start, $limit);
 			$this-> get_count_account();
+			$this->get_all_account($start, $limit);
+			
 
 		}
 	}
@@ -133,7 +112,8 @@ class Users_Discover{
 	}
 */
 	function all_serch_account($breed_loc, $start, $limit){
-		$result = mysql_query("SELECT * FROM users WHERE $breed_loc");
+		$users = new Users;
+		$result = mysql_query("SELECT * FROM user WHERE $breed_loc");
 		if(mysql_num_rows($result) != 0 ){ 
 			$this->max = mysql_num_rows($result);
 			$followers = new Followers;
@@ -149,219 +129,155 @@ class Users_Discover{
 			//asort($row);
 			for ($i=$start; $i < $limit; $i++) { 
 				
-				if ($row[$i]['dog_name']) {
-					$uid = $row[$i]['user_id'];
-					$name = $row[$i]['dog_name'];
-					$foto = $row[$i]['user_photo'];
-					$breed = $row[$i]['breed'];
-					$location = $row[$i]['location'];
-					$timestamp = $row[$i]['birthday'];
-				} else{
-					$uid = $row[$i]['user_id'];
-					$name = $row[$i]['user_name'];
-					$foto = $row[$i]['maine_photo'];
+
+				$uid = $row[$i]['user_id'];
+				$name = $row[$i]['name'];
+				$foto = $row[$i]['photo'];
+				$timestamp = $row[$i]['birthday'];
+				if ($row[$i]['user_id'] == $row[$i]['family_id']) {
+					$breed = $users->get_count_family_members($row[$i]['family_id']) . " pets ";
+				} else {
+					$breed = $row[$i]['breed'] ."<br>" . $row[$i]['sex'] . ", Age " . (date('Y') - gmdate("Y", $timestamp));
+				}
+				if ($row[$i]['owner'] == 1) {
 					$location = $row[$i]['location'];
 					$breed = "";
-					$timestamp = "0";
-				}	
+				} else {
+					$location="";
+				}
+
 				if ($foto == null) {
 					$foto = "paw-avatar.png";
-				}?>
-				<li class="list-element followers followers_<?= $uid; ?>" id="<?= $uid; ?>" data-count="<?= $i;?>">
-					<div class="flex-wrapper follow-list-item">
-
-						<div class="flex-wrapper user_follower_photo">
-							<div class="follow-dog-image follow-dog-image-centered">
-								<a href="user?id=<?= $uid; ?>">
-									<img src="http://<?= $_SERVER['HTTP_HOST']. '/img/avatar/' . $foto;?>" alt="dog picture">
-								</a>
-							</div>
-							<div class="follow-dog-description">
-								<a href="user?id=<?= $uid; ?>">
-									<p class="follow-dog-name follow-dog-name-centered">
-										<?= $name;?>
-									</p>
-								</a>
-								<p class="follow-dog-breed ">
-									<?= $breed;?>
-								</p>
-								<p class="follow-dog-age">
-									<a href="Discover?location=<?php echo str_replace(' ', '+', $location); ?>" class="link link-blue">
-										<?= $location;?>
-									</a>
-								</p>
-							</div>
-						</div>
-						<?php $followers->serch_follow($uid); ?>
-					</div>
-				</li>
-				<?php 
-
+				}
+				if ($foto == null) {
+					$foto = "paw-avatar.png";
+				}
+				$users->get_user_account($uid, $foto, $name, $breed, $location, 1);
 			}
 			
 		}
 	}
 
 	function get_count_account(){
-		$no_family = $this->get_all_users_no_family();
-		$all_family = $this->get_all_family();
-		$allarray = array_merge($no_family, $all_family);
-		$this->max = count($allarray);
-		return count($allarray);
+		$profile = 1;
+		$result = mysql_query("SELECT * FROM user WHERE profile='$profile'");
+		$this->max = mysql_num_rows($result);
+		return mysql_num_rows($result);
 	}
 
 	function get_all_account($start, $limit){
 		$users = new Users;
 		$followers = new Followers;
+		$profile = 1;
+		$result = mysql_query("SELECT * FROM user WHERE profile='$profile' LIMIT $start, $limit");
 
-		$no_family = $this->get_all_users_no_family();
-		$all_family = $this->get_all_family();
-		$allarray = array_merge($no_family, $all_family);
-		asort($allarray);
-		//print_r($allarray);
+		if(mysql_num_rows($result) != 0 ){ 
+			for ($i=0; $i < mysql_num_rows($result); $i++) { 
+				$allarray = mysql_fetch_assoc($result);
 
-		for ($i=$start; $i < $limit; $i++) { 
-			if ($allarray[$i]['family_id']) {
-				$uid = $allarray[$i]['f_name'];
-				$name = $allarray[$i]['f_name'];
-				$foto = $allarray[$i]['f_photo'];
-				$count_mem = $users->get_count_family_members($uid);
-				$location = "";
-				$breed = $count_mem ." Pets";
-				$result = mysql_query("SELECT * FROM users WHERE family='$name'");
-				if(mysql_num_rows($result) != 0 ){ 
-					$row = mysql_fetch_assoc($result);
-					$timestamp= $row['birthday'];
-
+				$uid = $allarray['user_id'];
+				$name = $allarray['name'];
+				$foto = $allarray['photo'];
+				$timestamp = $allarray['birthday'];
+				if ($allarray['user_id'] == $allarray['family_id']) {
+					$breed = $users->get_count_family_members($allarray['family_id']) . " pets ";
+				} else {
+					$breed = $allarray['breed'] ."<br>" . $allarray['sex'] . ", Age " . (date('Y') - gmdate("Y", $timestamp));
 				}
-			} elseif ($allarray[$i]['dog_name']) {
-				$uid = $allarray[$i]['user_id'];
-				$name = $allarray[$i]['dog_name'];
-				$foto = $allarray[$i]['user_photo'];
-				$breed = $allarray[$i]['breed'];
-				$location = $allarray[$i]['location'];
-				$timestamp = $allarray[$i]['birthday'];
-			} else{
-				$uid = $allarray[$i]['user_id'];
-				$name = $allarray[$i]['user_name'];
-				$foto = $allarray[$i]['maine_photo'];
-				$location = $allarray[$i]['location'];
-				$breed = "";
-				$timestamp = "0";
-			}	
-			if ($foto == null) {
-				$foto = "paw-avatar.png";
+				if ($allarray['owner'] == 1) {
+					$location = $allarray['location'];
+					$breed = "";
+				} else {
+					$location="";
+				}
+
+				if ($foto == null) {
+					$foto = "paw-avatar.png";
+				}
+				$users->get_user_account($uid, $foto, $name, $breed, $location, 1);
 			}
-
-			?>
-			<li class="list-element followers followers_<?= $uid; ?>" id="<?= $uid; ?>">
-				<div class="flex-wrapper follow-list-item">
-
-					<div class="flex-wrapper user_follower_photo">
-						<div class="follow-dog-image follow-dog-image-centered">
-							<a href="user?id=<?= $uid; ?>">
-								<img src="http://<?= $_SERVER['HTTP_HOST']. '/img/avatar/' . $foto;?>" alt="dog picture">
-							</a>
-						</div>
-						<div class="follow-dog-description">
-							<a href="user?id=<?= $uid; ?>">
-								<p class="follow-dog-name follow-dog-name-centered">
-									<?= $name;?>
-								</p>
-							</a>
-							<p class="follow-dog-breed ">
-								<?= $breed;?>
-							</p>
-							<p class="follow-dog-age">
-								<a href="Discover?location=<?php echo str_replace(' ', '+', $location); ?>" class="link link-blue">
-									<?= $location;?>
-								</a>
-							</p>
-						</div>
-					</div>
-					<?php $followers->serch_follow($uid); ?>
-				</div>
-			</li>
-			<?php 
 		}
 	}
 
 	function discover_serch_by_location($location, $start, $limit){
 		$followers = new Followers;
 		$users = new Users;
-		
-		$no_family = $this->get_all_users_no_family($start, $limit);
-		$all_family = $this->get_all_family($start, $limit);
-		
+		$result = mysql_query("SELECT * FROM user WHERE location='$location' LIMIT $start, $limit");
+		if(mysql_num_rows($result) != 0 ){ 
 
-		for ($ii=0; $ii < count($all_family); $ii++) { 
-			$fam[$ii] = $all_family[$ii]['f_name'];
-			$result = mysql_query("SELECT * FROM users WHERE family='$fam[$ii]'");
-			if(mysql_num_rows($result) != 0 ){ 
-				$row = mysql_fetch_assoc($result);
-				$all_family[$ii]['location'] = $row['location'];
+			for ($i=0; $i < mysql_num_rows($result); $i++) { 
+				$allarray = mysql_fetch_assoc($result);
+				$uid = $allarray['user_id'];
+				$name = $allarray['name'];
+				$foto = $allarray['photo'];
+				$timestamp = $allarray['birthday'];
+				if ($allarray['user_id'] == $allarray['family_id']) {
+					$breed = $users->get_count_family_members($allarray['family_id']) . " pets ";
+				} else {
+					$breed = $allarray['breed'] ."<br>" . $allarray['sex'] . ", Age " . (date('Y') - gmdate("Y", $timestamp));
+				}
+				if ($allarray['owner'] == 1) {
+					$location = $allarray['location'];
+					$breed = "";
+				} else {
+					$location="";
+				}
+
+				if ($foto == null) {
+					$foto = "paw-avatar.png";
+				}
+
+				if ($foto == null) {
+					$foto = "paw-avatar.png";
+				}
+				$users->get_user_account($uid, $foto, $name, $breed, $location, 1);
 
 			}
 		}
 
-		$allarray = array_merge($no_family, $all_family);
-		for ($i=0; $i < count($allarray); $i++) { 
-			if ($allarray[$i]['location'] == $location) {
-				if ($allarray[$i]['family_id']) {
-					$uid = $allarray[$i]['f_name'];
-					$name = $allarray[$i]['f_name'];
-					$foto = $allarray[$i]['f_photo'];
-					$count_mem = $users->get_count_family_members($uid);
-					$location = "";
-					$breed = $count_mem ." Pets";
+	}
 
-				} elseif ($allarray[$i]['dog_name']) {
-					$uid = $allarray[$i]['user_id'];
-					$name = $allarray[$i]['dog_name'];
-					$foto = $allarray[$i]['user_photo'];
-					$breed = $allarray[$i]['breed'];
-					$location = $allarray[$i]['location'];
-				} else{
-					$uid = $allarray[$i]['user_id'];
-					$name = $allarray[$i]['user_name'];
-					$foto = $allarray[$i]['maine_photo'];
-					$location = $allarray[$i]['location'];
-					$breed = "";
-				}	
-				if ($foto == null) {
-					$foto = "paw-avatar.png";
-				}
-				?>
-				<li class="list-element followers followers_<?= $uid; ?>" id="<?= $uid; ?>">
-					<div class="flex-wrapper follow-list-item">
-
-						<div class="flex-wrapper user_follower_photo">
-							<div class="follow-dog-image follow-dog-image-centered">
-								<a href="user?id=<?= $uid; ?>">
-									<img src="http://<?= $_SERVER['HTTP_HOST']. '/img/avatar/' . $foto;?>" alt="dog picture">
-								</a>
-							</div>
-							<div class="follow-dog-description">
-								<a href="user?id=<?= $uid; ?>">
-									<p class="follow-dog-name follow-dog-name-centered">
-										<?= $name;?>
-									</p>
-								</a>
-								<p class="follow-dog-breed ">
-									<?= $breed;?>
-								</p>
-								<p class="follow-dog-age">
-									<a href="Discover?location=<?php echo str_replace(' ', '+', $location); ?>" class="link link-blue">
-										<?= $location;?>
-									</a>
-								</p>
-							</div>
-						</div>
-						<?php $followers->serch_follow($uid); ?>
-					</div>
-				</li>
-				<?php 
+		function get_all_users($name, $start, $limit){
+		$users = new Users;
+		$user_array=array();
+		$resultd = mysql_query("SELECT * FROM user WHERE name LIKE '$name%' ORDER BY name ASC LIMIT $limit");
+		
+		if (mysql_num_rows($resultd) != 0) {
+			while ($row = mysql_fetch_array ($resultd)){
+				array_push($user_array, $row);
 			}
+		}
+		$lresult = mysql_query("SELECT * FROM user WHERE location LIKE '$name%' ORDER BY location ASC LIMIT $limit");
+		if (mysql_num_rows($lresult) != 0) {
+			while ($row = mysql_fetch_array ($lresult)){
+				array_push($user_array, $row);
+			}
+		}
+//rsort($user_array);
+		for ($i=0; $i < count($user_array); $i++) { 
+			$uid = $user_array[$i]['user_id'];
+			$name = $user_array[$i]['name'];
+			$foto = $user_array[$i]['photo'];
+			
+			$timestamp = $user_array[$i]['birthday'];
+			if ($user_array[$i]['user_id'] == $user_array[$i]['family_id']) {
+				$breed = $users->get_count_family_members($user_array[$i]['family_id']) . " pets ";
+			} else {
+				$breed = $user_array[$i]['breed'] ."<br>" . $user_array[$i]['sex'] . ", Age " . (date('Y') - gmdate("Y", $timestamp));
+			}
+			if ($user_array[$i]['owner'] == 1) {
+				$location = $user_array[$i]['location'];
+				$breed = "";
+			} else {
+				$location="";
+			}
+
+			if ($foto == null) {
+				$foto = "no-photo.png";
+			}
+
+			$users->get_user_account($uid, $foto, $name, $breed, $location, 1);
+
 		}
 
 	}

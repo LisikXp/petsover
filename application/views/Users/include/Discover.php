@@ -11,7 +11,7 @@
 				<div class="tile">
 					<h3 class="heading heading-h3 heading-no-margin">Discover</h3>
 					<hr class="hr-full-width">
-					<ul class="list discover">
+					<ul class="list discover" id="discover_list">
 						<?php $discover->get_wall_discover();?>
 					</ul>
 					

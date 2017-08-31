@@ -15,16 +15,16 @@ class Valuat{
 	function __construct(){
 		$myuser = new Users;
 		
-		if (($_SESSION['family']) != null ) {
+		if (($_SESSION['family_id']) != null ) {
 
-			$user_id = $_SESSION['family'];
-			$myfamily = $_SESSION['family'];
+			$user_id = $_SESSION['family_id'];
+			$myfamily = $_SESSION['family_id'];
 		} else {
 			$user_id = $_SESSION['user_id'];
 			
 		}
-		$my_valuat = $myuser->users($_SESSION['user_id']);
-		$this->mybreed =  $my_valuat['breed'];
+		$my_valuat = $myuser->my_owner();
+		$this->mybreed = $myuser->my_breed();
 		$this->mylocation = $my_valuat['location'];
 		$this->uid = $_SESSION['user_id'];
 		$this->sumvalua = 0;
@@ -70,9 +70,9 @@ class Valuat{
 	/*---------------------выводим всех пользователей кроме данного пользователя--------------------*/
 	function get_all_account(){
 		$uid = $_SESSION['user_id'];
+		$oid = $_SESSION['owner_id'];
 		
-		
-		$result = mysql_query("SELECT * FROM users WHERE user_id<>'$uid' AND dog_name>'' AND family=''");
+		$result = mysql_query("SELECT * FROM user WHERE owner_id<>'$oid' AND owner<>'1'");
 		if(mysql_num_rows($result) != 0 ){
 			for ($i=0; $i < mysql_num_rows($result); $i++) { 
 				$row = mysql_fetch_assoc($result);
@@ -128,8 +128,8 @@ class Valuat{
 				/*-----------------------------------------------end-------------------------------------------------------*/
 				
 				$family_sumvaluaхsum = array_sum($sumvalua);
-				/*$user_row[$i] = array_merge( array( 'sumvaluasum' => $family_sumvaluaхsum, 'sumvalua' => $sumvalua, 'user_id' => $row['user_id'], 'user_name' => $row['user_name'], 'dog_name' => $row['dog_name'], 'maine_photo' => $row['maine_photo'], 'user_photo' => $row['user_photo'], 'breed' => $row['breed'], 'sex' => $row['sex'], 'location' => $row['location'], 'family' => $row['family']) );*/
-				$user_row[$i] = array_merge( array( 'mainsum' => $family_sumvaluaхsum, 'user_name' => $row['user_name'], 'dog_name' => $row['dog_name'], 'maine_photo' => $row['maine_photo'], 'user_photo' => $row['user_photo'], 'breed' => $row['breed'], 'location' => $row['location'], 'user_id' => $row['user_id'],) );
+
+				$user_row[$i] = array_merge( array( 'mainsum' => $family_sumvaluaхsum, 'name' => $row['name'], 'photo' => $row['photo'], 'breed' => $row['breed'], 'location' => $row['location'], 'user_id' => $row['user_id'], 'owner_id' => $row['owner_id']) );
 				
 			}
 			rsort($user_row);
@@ -138,184 +138,97 @@ class Valuat{
 		
 	}
 
-	function get_all_account_family($family){
-
-		$result = mysql_query("SELECT * FROM users WHERE family='$family'");
-		if(mysql_num_rows($result) != 0 ){
-			for ($i=0; $i < mysql_num_rows($result); $i++) { 
-				$row = mysql_fetch_assoc($result);
-				$owner_id = $row['user_id'];
-
-      		//$arr[] = $row['breed'];
-				if ($row['breed'] == $this->mybreed) {
-					$sumvalua['breed'] = 3;
-				} else {
-					$sumvalua['breed'] = 0;
-				}
-				if ($row['location'] == $this->mylocation) {
-					$sumvalua['location'] = 1;
-				} else {
-					$sumvalua['location'] = 0;
-				}	
-
-				$get_follow_family = $this->common_followers($owner_id);
-
-
-				$sumvalua['common'] = count($get_follow_family);
-				/*----------------------------------подсчитываем количество фолловеров--------------------------------------*/
-
-				$sumvalua['follow'] = ($this->get_follow($owner_id));
-
-				/*-----------------------------------------------end-------------------------------------------------------*/
-
-				/*---------------------------------подсчитываем кол-во коментариев-----------------------------------------*/
-
-				$sumvalua['comment'] = ($this->get_comment($owner_id));
-
-				/*-----------------------------------------------end-------------------------------------------------------*/
-
-				/*----------------------------------подсчитываем количество лайков-------------------------------------*/
-
-
-				$sumvalua['like'] = ($this->get_likes($owner_id));
-
-
-				/*-----------------------------------------------------end-------------------------------------------------*/
-
-				/*----------------------------------подсчет количества загруженных фото------------------------------------*/
-
-				$get_wall_photo_uid = $this->get_wall($owner_id);
-
-				if ($row['user_id'] == $get_wall_photo_uid['owner_id']) {
-					$sumvalua['photo'] = (($get_wall_photo_uid['count']/10));
-					$sumvalua['post'] = (($get_wall_photo_uid['count_post']/10));
-
-
-				}
-				//$sumvalua = $this->sumvalua;
-				/*-----------------------------------------------end-------------------------------------------------------*/
-				
-				$family_sumvaluaхsum[$i] = array_sum($sumvalua);
-				/*	$user_row[$i] = array_merge( array( 'sumvalua' => $sumvalua, 'sumvaluasum' => $family_sumvaluaхsum, 'user_id' => $row['user_id'], 'user_name' => $row['user_name'], 'dog_name' => $row['dog_name'], 'maine_photo' => $row['maine_photo'], 'user_photo' => $row['user_photo'], 'breed' => $row['breed'], 'sex' => $row['sex'], 'location' => $row['location'], 'family' => $row['family']) );*/
-				$user_row[$i] = array_merge( array( 'sumvalua' => $sumvalua, 'sumvaluasum' => $family_sumvaluaхsum, 'dog_name' => $row['dog_name'], 'location' => $row['location']) );
-				
-			}
-			
-			return $family_sumvaluaхsum;
-		}
-		
-	}
 	/*------------------------------------------end----------------------------------------------------------*/
 
-	/* ------------get family------------*/
-	function get_all_family(){
-		$myfamily = $_SESSION['family'];
-		$uresult = mysql_query("SELECT * FROM family WHERE f_name<>'$myfamily'");
-		if(mysql_num_rows($uresult) != 0 ){
-			for ($r=0; $r < mysql_num_rows($uresult); $r++) { 
-				$roww = mysql_fetch_assoc($uresult);
+	function sumvalue_add(){
+		$users = new Users;
+		$oid = $_SESSION['owner_id'];
+		$all_account = $this->get_all_account();
+		$result = mysql_query("SELECT * FROM user WHERE owner_id<>'$oid' AND owner<>'1'");
+		if(mysql_num_rows($result) != 0 ){
+			
+			for ($i=0; $i < mysql_num_rows($result); $i++) { 
+				$row = mysql_fetch_assoc($result);
 
-				$fname = $roww['f_name'];
-				$fphoto = $roww['f_photo'];
-				$users_of_family = $this->get_all_account_family($fname);
-				/*----------------------достаем общих кол-во фолловеров семьи-----------------------------------*/
-
-				$get_follow_family = $this->common_followers($fname);
-
-
-				$this->family_sumvalua['common'] = count($get_follow_family);
-
-				/*-------------------------end-----------------------------------------------------*/
-
-				/*----------------------------------подсчитываем количество фолловеров--------------------------------------*/
-
-				$this->family_sumvalua['followers'] = ($this->get_follow($fname));
-
-				/*-----------------------------------------------end-------------------------------------------------------*/
-
-				/*---------------------------------подсчитываем кол-во коментариев-----------------------------------------*/
-
-				$this->family_sumvalua['comment'] = ($this->get_comment($fname));
-
-				/*-----------------------------------------------end-------------------------------------------------------*/
-
-				/*----------------------------------подсчитываем количество лайков-------------------------------------*/
-
-
-				$this->family_sumvalua['like'] = ($this->get_likes($fname));
-
-
-				/*-----------------------------------------------------end-------------------------------------------------*/
-
-				/*----------------------------------подсчет количества загруженных фото------------------------------------*/
-
-				$get_wall_photo_uid = $this->get_wall($fname);
-
-				if ($fname == $get_wall_photo_uid['owner_id']) {
-					$this->family_sumvalua['photo'] = (($get_wall_photo_uid['count']/10));
-					$this->family_sumvalua['post'] = (($get_wall_photo_uid['count_post']/10));
-
-
-				}
-				$family_sumvaluaх = $this->family_sumvalua;
-
-				$family_sumvaluaхsum = array_sum($this->family_sumvalua);
-			/*	for ($i=0; $i < count($users_of_family); $i++) { 
-
-					$user_sum[$i] = $users_of_family[$i]['sumvaluasum'];
-
-				}
-				*/
-
-			//print_r($user_sum);
-				$user_summ = array_sum($users_of_family);
-				$main_summ = ($family_sumvaluaхsum + $user_summ)/count($users_of_family);
-
-				/*$user_row[$r] = array_merge( array( 'mainsum' => $main_summ, 'sumvalua' => $family_sumvaluaх, 'sumvaluasum' => $family_sumvaluaхsum, 'sumvaluauser' => $user_summ, 'count' => count($users_of_family)), $roww, $users_of_family);*/
-
-				/*$user_row[$r] = array_merge( array( 'mainsum' => $main_summ, 'sumvalua' => $family_sumvaluaх, 'sumvaluasum' => $family_sumvaluaхsum, 'sumvaluauser' => $user_summ, 'commosumm' => ($family_sumvaluaхsum + $user_summ), 'count' => count($users_of_family)), $roww, $users_of_family);*/
-				$user_row[$r] = array_merge( array( 'mainsum' => $main_summ, 'dog_name' => $fname, 'user_photo' => $fphoto, 'user_id' => $fname, 'breed' => count($users_of_family)." pets"), $roww);
-
-
+				$arr[] = $row['owner_id'];
 
 			}
+			$all_owner = array_merge(array_unique($arr));
+			for ($r=0; $r < count($all_owner); $r++) { 
+				for ($t=0; $t < count($all_account); $t++) { 
+
+					if ($all_owner[$r] == $all_account[$t]['owner_id']) {
+						$all_ac[$r][] = $all_account[$t]['mainsum'];
+						
+
+					}
+				}
+			}
+			for ($y=0; $y < count($all_ac); $y++) { 
+				$rty[] = array_sum($all_ac[$y]);
+			}
+
+			for ($w=0; $w < count($all_owner); $w++) { 
+				$fresult = mysql_query("SELECT * FROM user WHERE owner_id='$all_owner[$w]' AND profile='1'");
+				if(mysql_num_rows($fresult) != 0 ){
+					$row = mysql_fetch_assoc($fresult);
+					$count = $users->get_count_family_members($row['user_id']);
+					if ($row['user_id'] == $row['family_id']) {
+						$fcount = ($rty[$w]/($count + 2));
+					} else {
+						$fcount = $rty[$w];
+					}
+					$user_row[$w] = array_merge( array( 'mainsum' => $fcount, 'name' => $row['name'], 'photo' => $row['photo'], 'breed' => $row['breed'], 'location' => $row['location'], 'user_id' => $row['user_id'], 'sex' => $row['sex'], 'family_id' => $row['family_id'], 'owner_id' => $row['owner_id'], 'birthday' => $row['birthday']) );
+				}
+			}
+/*
+rsort($user_row);
+			echo "<pre>";
+			print_r($user_row);
+			echo "</pre>";*/
 			rsort($user_row);
 			return $user_row;
 		}
 	}
+
 	/*--------------end-----------------*/
 
 	function get_list_users(){
-		$myfamily = $_SESSION['family'];
-		$all_account = $this->get_all_account();
-		$get_all_family = $this->get_all_family();
-		$all_profile = array_merge($all_account, $get_all_family);
-		rsort($all_profile);
-	/*	echo "<pre>";
-		print_r($all_profile);
+		$myfamily = $_SESSION['family_id'];
+		$all_profile = $this->sumvalue_add();
+		$users = new Users;
+		 $main_url = new Main_url;
+/*		echo "<pre>";
+		print_r($all_account);
 		echo "</pre>";*/
 		for ($i=0; $i < 10; $i++) {
 			$myfolow = $this->get_common_follower($all_profile[$i]['user_id']);
 			if ($myfolow['my_following'] != $all_profile[$i]['user_id']) {
-				$fotos = $all_profile[$i]['user_photo'];
+				$fotos = $all_profile[$i]['photo'];
+				$timestamp = $all_profile[$i]['birthday'];
 				if ($fotos == null) {
 					$fotos = "paw-avatar.png";
 				} ?>
 				<li class="list-item follow-dog followers_<?= $all_profile[$i]['user_id']; ?>" id="<?= $all_profile[$i]['user_id']; ?>" data-val="<?= $all_profile[$i]['mainsum'];?>">
 					<div class="flex-wrapper">
 						<div class="follow-dog-image">
-							<a href="user?id=<?= $all_profile[$i]['user_id']; ?>">
+							<a href="<?= $main_url->get_url($all_profile[$i]['user_id']); ?>">
 								<img src="http://<?= $_SERVER['HTTP_HOST']. '/img/avatar/' . $fotos;?>" alt="dog picture">
 							</a>
 						</div>
 						<div class="follow-dog-description">
-							<a href="user?id=<?= $all_profile[$i]['user_id']; ?>">
+							<a href="<?= $main_url->get_url($all_profile[$i]['user_id']); ?>">
 								<p class="follow-dog-name">
-									<?php echo $all_profile[$i]['dog_name'];?>
+									<?php echo $all_profile[$i]['name'];?>
 								</p>
 							</a>
 							<p class="follow-dog-breed">
-								<?php echo $all_profile[$i]['breed'];?>
+								<?php if ($all_profile[$i]['user_id'] == $all_profile[$i]['family_id']) {
+									$breed = $users->get_count_family_members($all_profile[$i]['user_id']) . " pets ";
+								} else {
+									$breed = $all_profile[$i]['breed'];
+								};
+								echo $breed;?>
 							</p>
 							<div class="add_remove_followers add_remove_followers_<?= $all_profile[$i]['user_id'];?>" id="<?= $all_profile[$i]['user_id'];?>">
 								<button class="link link-green follow-dog-follow-link add_follow" id="add_following_tofollow">
@@ -335,10 +248,9 @@ class Valuat{
 	}
 
 	function get_count_user(){
-		$all_account = $this->get_all_account();
-		$get_all_family = $this->get_all_family();
+		$all_profile = $this->sumvalue_add();
 		$myfolow = $this->get_my_follower();
-		$all_profile = array_merge($all_account, $get_all_family);
+
 		rsort($all_profile);
 
 		return (count($all_profile) - count($myfolow));
@@ -346,46 +258,31 @@ class Valuat{
 
 	function get_all_list_users($start, $limit){
 		$followers = new Followers;
-		$all_account = $this->get_all_account();
-		$get_all_family = $this->get_all_family();
-		$all_profile = array_merge($all_account, $get_all_family);
-		rsort($all_profile);
+		$users = new Users;
+		$all_profile = $this->sumvalue_add();
 		for ($i=0; $i < $limit; $i++) {
 			$myfolow = $this->get_common_follower($all_profile[$i]['user_id']);
 			if ($myfolow['my_following'] != $all_profile[$i]['user_id']) {
-				$fotos = $all_profile[$i]['user_photo'];
+				$fotos = $all_profile[$i]['photo'];
+				$timestamp = $all_profile[$i]['birthday'];
 				if ($fotos == null) {
 					$fotos = "paw-avatar.png";
-				}?>
-				<li class="list-element followers followers_<?= $all_profile[$i]['user_id']; ?>" id="<?= $all_profile[$i]['user_id']; ?>" data-val="<?= $all_profile[$i]['mainsum'];?>">
-					<div class="flex-wrapper follow-list-item">
+				}
 
-						<div class="flex-wrapper" id="<?= $all_profile[$i]['user_id']; ?>">
-							<div class="follow-dog-image follow-dog-image-centered user_follower_photo">
-								<a href="user?id=<?=$all_profile[$i]['user_id']; ?>">
-									<img src="http://<?= $_SERVER['HTTP_HOST']. '/img/avatar/' . $fotos;?>" alt="dog picture">
-								</a>
-							</div>
-							<div class="follow-dog-description">
-								<a href="user?id=<?= $all_profile[$i]['user_id'];?>">
-									<p class="follow-dog-name follow-dog-name-centered">
-										<?= $all_profile[$i]['dog_name'];?>
-									</p>
-								</a>
-								<p class="follow-dog-breed ">
-									<?= $all_profile[$i]['breed'];?>
-								</p>
-								<p class="follow-dog-age">
-									<a href="Discover?location=<?php echo str_replace(' ', '+', $all_profile[$i]['location']); ?>" class="link link-blue">
-										<?= $all_profile[$i]['location'];?>
-									</a>
-								</p>
-							</div>
-						</div>
-						<?php $followers->serch_follow($all_profile[$i]['user_id']); ?>
-					</div>
-				</li>
-				<?php
+				if ($all_profile[$i]['user_id'] == $all_profile[$i]['family_id']) {
+					$breed = $users->get_count_family_members($all_profile[$i]['user_id']) . " pets ";
+				} else {
+					$breed = $all_profile[$i]['breed'] ."<br>" . $all_profile[$i]['sex'] . ", Age " . (date('Y') - gmdate("Y", $timestamp));
+				}
+				if ($all_profile[$i]['owner'] == 1) {
+					$location = $all_profile[$i]['location'];
+					$breed = "";
+				} else {
+					$location="";
+				}
+
+				$users->get_user_account($all_profile[$i]['user_id'], $fotos, $all_profile[$i]['name'], $breed, $location, 1);
+
 			}
 		}
 	}
@@ -428,9 +325,9 @@ class Valuat{
 	}
 
 	function get_common_follower($uid){
-		if (($_SESSION['family']) != null ) {
+		if (($_SESSION['family_id']) != null ) {
 
-			$user_id = $_SESSION['family'];
+			$user_id = $_SESSION['family_id'];
 
 		} else {
 			$user_id = $_SESSION['user_id'];
@@ -448,9 +345,9 @@ class Valuat{
 	}
 
 	function get_my_follower(){
-		if (($_SESSION['family']) != null ) {
+		if (($_SESSION['family_id']) != null ) {
 
-			$user_id = $_SESSION['family'];
+			$user_id = $_SESSION['family_id'];
 
 		} else {
 			$user_id = $_SESSION['user_id'];

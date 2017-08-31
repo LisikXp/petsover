@@ -1,5 +1,5 @@
 <div class="contest">
-	<h3 class="heading heading-h3 contest-heading">Petsfame Live Contes</h3>
+	<h3 class="heading heading-h3 contest-heading">Petsfame Live Contest</h3>
 	<hr class="hr  hr-full-width hr-body">
 	<div class="contest-image">
 

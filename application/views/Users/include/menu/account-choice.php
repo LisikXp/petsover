@@ -1,5 +1,5 @@
 <?php
-if (($_SESSION['family']) != null) { ?>
+if (($_SESSION['family_id']) != null) { ?>
 <li class="list-item follow-dog follow-dog-option" id="<?php echo $name;?>">
 	<div class="flex-wrapper">
 		<div class="follow-dog-image">

@@ -1,5 +1,5 @@
 <form action="search">
-	<input type="text" class="input input-full-width input-search-by-keyword" placeholder="Search by keyword">
+	<input type="text" class="input input-full-width input-search-by-keyword" placeholder="Search by keyword" oninput="search_by_keyword(this)">
 </form>
 <h3 class="heading-h3 category-name">Filter by</h3>
 <hr class="hr hr-full-width hr-body">
@@ -7,10 +7,10 @@
 	Look For
 </p>
 <ul class="list category-list">
-	<li class="list-item">
+	<li class="list-item" id="filter-accounts">
 		Accounts
 	</li>
-	<li class="list-item">
+	<li class="list-item" id="filter-photos">
 		Photos
 	</li>
 	<li class="list-item">
@@ -33,6 +33,7 @@
 				<?php } else{ ?>
 				 <option value="Select a breed" disabled selected>Select a breed</option>
 				<?php } ?>
+				<option value="All">All</option>
 				<option value="Airedale Terrier">Airedale Terrier</option>
 				<option value="Airedale">Airedale</option>
 				<option value="Basset Hound">Basset Hound</option>

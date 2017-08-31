@@ -14,9 +14,12 @@ include_once "class-setting.php";
 include_once "class-discover.php";
 include_once "class-notification.php";
 include_once "class-search.php";
+include_once "class-url.php";
 
 $setting = new Setting;
-$notification = new Notification;
+$notification = new Class_Notification;
+
+
 
 define("include", $_SERVER['DOCUMENT_ROOT']. "/application/views/Users/include");
 
@@ -27,14 +30,15 @@ if(isset($_POST['signup-reg'])){ // ========> Если нажато - Зарег
 	registration();
 } 
 function registration(){
-	if($_POST['signup-name'] == '' || 
-		$_POST['signup-email'] == '' || 
-		$_POST['signup-location'] == '' || 
+ $main_url = new Main_url;
+ if($_POST['signup-name'] == '' || 
+  $_POST['signup-email'] == '' || 
+  $_POST['signup-location'] == '' || 
                $_POST['signup-password'] == ''){ // > Проверяем на заполнение [ * ] необходимых полей
-    $_SESSION['msg'] = "Fields are required!";
+  $_SESSION['msg'] = "Fields are required!";
                 } else{ // ====> Иначе идём дальше
                 $mail = trim($_POST['signup-email']); // ======> Значение формы [ mail ]
-                $sql_res = mysql_query("SELECT user_id FROM users WHERE email='$mail'") or die(mysql_error());
+                $sql_res = mysql_query("SELECT user_id FROM user WHERE email='$mail'") or die(mysql_error());
                 if(mysql_num_rows($sql_res) != 0 ){ // ==> Если пользователь с такими данными существует
                     $_SESSION['msg'] = "User with such login and / or mail already exists!";} // =====> Выдаем ошибку
                 else{ // =====> Если нет - идём дальше
@@ -43,19 +47,23 @@ function registration(){
                     $password = md5(trim($_POST['signup-password'])); // > Значение формы [ password ]
                     $location = trim($_POST['signup-location']); // ===> Значение формы [ telefon ]
                     $timereg = strtotime(date('d-m-Y'));
-                    mysql_query("INSERT INTO users SET user_name='$name', 
-                    	email='$mail', 
-                    	password='$password', 
-                    	location='$location',
-                        time_registration='$timereg'"); // => Делаем запись в таблицу
-                    // > Определяем новый id;
+                    $avatar = "no-photo.png";
+                    mysql_query("INSERT INTO user SET name='$name', 
+                    	email='$mail',
+                      photo='$avatar',
+                      password='$password', 
+                      location='$location',
+                      time_registration='$timereg',
+                      profile='1',
+                      owner='1'"); 
                     $id = mysql_insert_id();
-                    $sql_res = mysql_query("SELECT * FROM users WHERE user_id=$id");
+                    $sql_res = mysql_query("SELECT * FROM user WHERE user_id=$id");
                     $arr = mysql_fetch_assoc($sql_res);         
-                                  $_SESSION['user_id'] = $arr['user_id']; // =======> Сохраняем его в сессию
+                    $_SESSION['user_id'] = $arr['user_id']; 
+                    $_SESSION['owner_id'] = $arr['user_id'];
                     $id = $_SESSION['user_id']; // =====> Присваеваем id в переменную $id
-                    $usr = mysql_fetch_assoc(mysql_query("SELECT * FROM users WHERE user_id=$id")); 
-                    header('location: user?id='.$_SESSION['user_id']);
+                    $usr = mysql_fetch_assoc(mysql_query("SELECT * FROM user WHERE user_id=$id")); 
+                    header('location: '.$main_url->get_url($_SESSION['user_id']));
                   }
                 }
               }
@@ -66,132 +74,119 @@ function registration(){
                $password = md5($_POST['password']);
                registration_network($email, $name, $link_prof, $password);
              }*/
-
              function registration_network($email, $name, $link_prof){
+              $main_url = new Main_url;
               $comma_separated = str_word_count($name, 1);
               $uname = implode("_", $comma_separated);
 
               $timereg = strtotime(date('d-m-Y'));
-              $sql_res = mysql_query("SELECT * FROM users WHERE email='$email'") or die(mysql_error());
+              $sql_res = mysql_query("SELECT * FROM user WHERE email='$email'") or die(mysql_error());
               if(mysql_num_rows($sql_res) != 0 ){ // ==> Если пользователь с такими данными существует
 
                 $arr = mysql_fetch_assoc($sql_res);
-                
-                $_SESSION['user_id'] = $arr['user_id'];
                 $user = new Family;
-                $user->serch_family(); 
 
-                    }else{ // =====> Если нет - идём дальше
-                     mysql_query("INSERT INTO users SET user_name='$uname', 
-                      email='$email', 
-                      time_registration='$timereg',
-                         network_link='$link_prof'"); // => Делаем запись в таблицу
-                    // > Определяем новый id;
-                     $id = mysql_insert_id();
-                     $sql_res = mysql_query("SELECT * FROM users WHERE user_id=$id");
-                     $arr = mysql_fetch_assoc($sql_res);         
-                                  $_SESSION['user_id'] = $arr['user_id']; // =======> Сохраняем его в сессию
-                    $id = $_SESSION['user_id']; // =====> Присваеваем id в переменную $id
-
-                    header('location: user?id='.$_SESSION['user_id']);
-                  }
-                }
-
-                if(isset($_POST['authorize'])) {
-                  authorization();
-                }
-//  Авторизация
-                function authorization() {
-
-                 $error = '';
-                 $email = trim($_POST['login-email']); 
-                 $_SESSION['login-email'] = $email;
-                 $password = trim($_POST['login-password']); 
-
-                 if(!$email) {
-                  $_SESSION['error'] = 'No username';
-                  return $error;
-                } 
-                elseif(!$password) {
-                 $error = 'Password is not specified';
-                 return $error;
+                $_SESSION['owner_id'] = $arr['user_id'];
+                $uid  = $arr['user_id'];
+                $result = mysql_query("SELECT * FROM user WHERE owner_id='$uid' AND profile='1'") or die(mysql_error()); 
+                $arruser = mysql_fetch_assoc($result);
+                $_SESSION['user_id'] = $arruser['user_id'];
+                if ($arr["family_id"] != 0) {
+                 $_SESSION['family_id'] = $arr['family_id']; 
+                 $user->my_account();
                }
+               $user->serch_family(); 
+             }else{ 
+               mysql_query("INSERT INTO user SET name='$uname', 
+                email='$email',
+                time_registration='$timereg',
+                network_link='$link_prof',
+                profile='1',
+                owner='1'");
+               $id = mysql_insert_id();
+               $sql_res = mysql_query("SELECT * FROM user WHERE user_id=$id");
+               $arr = mysql_fetch_assoc($sql_res);         
+               $_SESSION['user_id'] = $arr['user_id']; 
+               $_SESSION['owner_id'] = $arr['user_id'];
+               $id = $_SESSION['user_id']; 
 
-               $sql_res = mysql_query("SELECT * FROM users WHERE email='$email'") or die(mysql_error()); 
-
-               if(mysql_num_rows($sql_res) != 0 ){ 
-                 $arr = mysql_fetch_assoc($sql_res);
-                 if($arr['password'] === md5($password)){ 
-                   $_SESSION['user_id'] = $arr['user_id'];
-                   if ($arr["dog_name"] == null) {
-                    $_SESSION['Guest'] = true;
-                  }
-                  $user = new Family;
-                  $user->serch_family(); 
-                }else{ 
-                 $error = "Password incorrect!"; 
-                 return $error;
-               }
-             } else{
-               $error = "User is not found!";
-               return $error;
+              // header('location: '.urldecode($main_url->get_url($_SESSION['user_id']))); exit;
+               $url = $main_url->get_url($_SESSION['user_id']);
+               echo '<script>location.replace("'.$url.'");</script>'; exit;
              }
+           }
+
+           if(isset($_POST['authorize'])) {
+            authorization();
+          }
+//  Авторизация
+          function authorization() {
+            $user = new Family;
+            $error = '';
+            $email = trim($_POST['login-email']); 
+            $_SESSION['login-email'] = $email;
+            $password = trim($_POST['login-password']); 
+
+            if(!$email) {
+              $_SESSION['error'] = 'No username';
+              return $error;
+            } 
+            elseif(!$password) {
+             $error = 'Password is not specified';
+             return $error;
+           }
+
+           $sql_res = mysql_query("SELECT * FROM user WHERE email='$email'") or die(mysql_error()); 
+
+           if(mysql_num_rows($sql_res) != 0 ){ 
+             $arr = mysql_fetch_assoc($sql_res);
+             if($arr['password'] === md5($password)){ 
+
+               if ($arr["owner_id"] == 0) {
+                $_SESSION['Guest'] = true;
+                $_SESSION['user_id'] = $arr['user_id'];
+                $_SESSION['owner_id'] = $arr['user_id'];
+              } else {
+                $uid  = $arr['user_id'];
+                $_SESSION['owner_id'] = $arr['user_id'];
+                $result = mysql_query("SELECT * FROM user WHERE owner_id='$uid' AND profile='1'") or die(mysql_error()); 
+                $arruser = mysql_fetch_assoc($result);
+                $_SESSION['user_id'] = $arruser['user_id'];
+              }
+
+              if ($arr["family_id"] != 0) {
+               $_SESSION['family_id'] = $arr['family_id']; 
+               $user->my_account();
+             }
+             $user->serch_family(); 
+           }else{ 
+             $error = "Password incorrect!"; 
+             return $error;
+           }
+         } else{
+           $error = "User is not found!";
+           return $error;
+         }
 
     // Не забываем закрывать соединение с базой данных
-             mysql_close();
+         mysql_close();
 
     // Возвращаем true для сообщения об успешной авторизации пользователя
-             return true;
-           }
+         return true;
+       }
 
-           /*-------------Функция выхода-------------------*/
-           function loguot(){
-            session_destroy();
-            unset($_GET['stop']);
-            unset($_SESSION['user_id']);
-            unset($_SESSION['family']);
-            unset($_SESSION['Guest']);
-            header('location:/SignIn'); 
-            exit;
-          }
+       /*-------------Функция выхода-------------------*/
+       function loguot(){
+        session_destroy();
+        unset($_GET['stop']);
+        unset($_SESSION['user_id']);
+        unset($_SESSION['family']);
+        unset($_SESSION['family_id']);
+        unset($_SESSION['Guest']);
+        header('location:/SignIn'); 
+        exit;
+      }
 
-
-
-          if(isset($_POST['save_setting'])){
-
-            $email = $_POST['email'];
-            $curr_password = $_POST['curr_password'];
-            $password = $_POST['new_password'];
-            $Re_Type_password = $_POST['Re_Type_password'];
-
-
-            if (isset($_POST['facebook'])) {
-             $network['facebook'] = $_POST['facebook'];
-           }
-
-           if (isset($_POST['twitter'])) {
-             $network['twitter'] = $_POST['twitter'];
-           }
-
-           if (isset($_POST['instagram'])) {
-            $network['instagram'] = $_POST['instagram'];
-          }
-
-          if (isset($_POST['tumblr'])) {
-            $network['tumblr'] = $_POST['tumblr'];
-          }    
-
-          if ($_POST['google']) {
-            $network['google'] = $_POST['google'];
-          }       
-//echo $curr_password .  $password;
-
-          $network_link = serialize($network);
-
-          $setting->set_account_setting($email, $curr_password, $password, $network_link);
-        }
-
-     
       if (isset($_POST['reset_pwd'])) {
         $new_pwd = $_POST['new_password'];
         $code = $_GET['action'];
@@ -227,6 +222,8 @@ function registration(){
       }
     }
 
+
+
     class Likes{
 
 
@@ -239,7 +236,7 @@ function registration(){
       }
     }
     function set_post_likes($post_id, $user_id, $post_user_owner){
-      $notification = new Notification;
+      $notification = new Class_Notification;
       $sql_res = mysql_query("SELECT * FROM likes WHERE post_id='$post_id' AND user_id='$user_id'") or die(mysql_error());
       if(mysql_num_rows($sql_res) != 0 ){
 
@@ -256,26 +253,18 @@ function registration(){
    }
 
    function serch_user_like($post_id, $uid){
-/*  if (($_SESSION['family']) != null) {
+    $sql_res = mysql_query("SELECT * FROM likes WHERE post_id='$post_id' AND user_id='$uid'") or die(mysql_error());
+    if(mysql_num_rows($sql_res) != 0 ){
+      return 1;
+    } else {
+      return 0;
+    }
 
-    $uid = $_SESSION['family'];
-
-  } else {
-
-    $uid = $_SESSION['user_id'];
-  }*/
-  $sql_res = mysql_query("SELECT * FROM likes WHERE post_id='$post_id' AND user_id='$uid'") or die(mysql_error());
-  if(mysql_num_rows($sql_res) != 0 ){
-    return 1;
-  } else {
-    return 0;
   }
 
-}
-
-function remove_like($post_id, $user_id){
-  $rem_comm = mysql_query ("DELETE FROM likes WHERE post_id='$post_id' AND user_id='$user_id'");
-}
+  function remove_like($post_id, $user_id){
+    $rem_comm = mysql_query ("DELETE FROM likes WHERE post_id='$post_id' AND user_id='$user_id'");
+  }
 
 }
 

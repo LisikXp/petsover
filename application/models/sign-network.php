@@ -15,7 +15,7 @@ $permissions = ['email']; // Optional permissions
 $loginUrl = $helper->getLoginUrl('http://petsoverload.yaskravo.net/registration_fb', $permissions);
 
 //echo '<a href="' . htmlspecialchars($loginUrl) . '">Log in with Facebook!</a>';
-return htmlspecialchars($loginUrl);
+return urldecode($loginUrl);
 }
 
 function google(){

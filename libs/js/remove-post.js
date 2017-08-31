@@ -8,7 +8,7 @@ $(document).on('click','#remove_post', function() {
 	data.append("remove_post", "true");
 	data.append("remove_post_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -31,7 +31,7 @@ $(document).on('click','.undo_remove', function() {
 	data.append("undo_removing_post", "true");
 	data.append("undo_remove_post_id", remove_post[parid]);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -43,6 +43,6 @@ $(document).on('click','.undo_remove', function() {
 		}
 
 	});
-	this.remove();
+	$(this).remove();
 });
 /*-----end post-----*/

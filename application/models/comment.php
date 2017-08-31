@@ -6,80 +6,58 @@ class Comments{
 	function comment($user_from, $message, $comment_id, $time, $owner_id){ 
 		$user_f = new Users;
 		$famili = new Family;
-		$fam = $famili->get_my_family_members();
-		$ufrom = $user_f->users($user_from);
-		if (!is_numeric($user_from)) {
-			$fotos = $ufrom['f_photo'];
-			$dname = $ufrom['f_name'];
-			if ($fotos == null) {
-				$fotos = $ufrom['maine_photo'];
-				$dname = $ufrom['user_name'];
-			}
-		} else {
-			$fotos = $ufrom['user_photo'];
-			$dname = $ufrom['dog_name'];
-		}
+		$wall = new Wall;
+              $main_url = new Main_url;
+              $fam = $famili->get_my_family_members();
+              $ufrom = $user_f->users($user_from);
 
-		
+              $fotos = $ufrom['photo'];
+              $dname = $ufrom['name'];
+              if (($_SESSION['family']) != null ) {
 
-		if (($_SESSION['family']) != null ) {
+                  $user_id = $_SESSION['family_id'];
+           } else {
+                  $user_id = $_SESSION['user_id'];
+           }
+           $far = false;
+           for ($i=0; $i < count($fam); $i++) { 
+                  if ($fam[$i] == $user_from || $user_id == $user_from || $user_id == $owner_id) {
+                        $far = true;
+                 }
+          }
+          ?>
+          <li class="flex-wrapper comment comment_<?= $comment_id;?>" id="<?= $comment_id;?>">
+           <div class="comment-image">
+                 <a href="<?= $main_url->get_url($user_from); ?>">
+                       <img src="http://<?=  $_SERVER['HTTP_HOST']. '/img/avatar/' . $fotos;?>" alt="" class="image">
+                </a>
+         </div>
+         <div class="comment-text" id="<?= $comment_id;?>">
+          <h3 class="heading-h5 comment-text-name"><a href="<?= $main_url->get_url($user_from); ?>"><?= $dname;?></a> 
+              <span class="comment-text-time utime_<?= $comment_id;?>">
+                <?php
+                echo $wall->data_form($time);?> </span></h3>
+                <div class="comment_block comment_block_<?= $comment_id;?>">
+                      <p class="comment-text-content" id="comment_text_<?= $comment_id;?>">
+                            <?= $message; ?>
+                     </p>
+              </div>
+              <?php
 
-			$user_id = $_SESSION['family'];
-		} else {
-			$user_id = $_SESSION['user_id'];
-		}
-		$far = false;
-		for ($i=0; $i < count($fam); $i++) { 
-			if ($fam[$i] == $user_from || $user_id == $user_from || $user_id == $owner_id) {
-				$far = true;
-			}
-		}
-		?>
-		<li class="flex-wrapper comment comment_<?= $comment_id;?>" id="<?= $comment_id;?>">
-			<div class="comment-image">
-				<a href="user?id=<?= $user_from; ?>">
-					<img src="http://<?=  $_SERVER['HTTP_HOST']. '/img/avatar/' . $fotos;?>" alt="" class="image">
-				</a>
-			</div>
-			<div class="comment-text" id="<?= $comment_id;?>">
-				<h3 class="heading-h5 comment-text-name"><a href="user?id=<?= $user_from; ?>"><?= $dname;?></a> <span class="comment-text-time utime_<?= $comment_id;?>">
-					<?php
-					$date = new DateTime();
-					$date->setTimestamp($time);
-					$gdate = $date->format("d F Y");
-					$gday = $date->format("d");
-					$gHour = $date->format("H");
-					$gTime = $date->format("i");
-					if ($date->format("i") == date('i')) {
-						echo (date('s') - $date->format("s")) . " sec";
-					}elseif ($gHour == date('H')) {
-						echo (date('i') - $gTime) . " min";
-					} elseif ($gday == date('d')) {
-						echo (date('H') - $gHour) . " hour";
-					} else {
-						echo $gdate;
-					}?> </span></h3>
-					<div class="comment_block comment_block_<?= $comment_id;?>">
-						<p class="comment-text-content" id="comment_text_<?= $comment_id;?>">
-							<?= $message; ?>
-						</p>
-					</div>
-					<?php
-
-					if ($far) {?>
-					<button class=" button-delete comment-delete remove_comment_<?= $comment_id;?>" id="remove_comment">
-						<img src="img/cross.svg" alt="close">
-					</button>
-					<?php }	?>
-				</div>
-			</li>
-			<?php }
+              if ($far) {?>
+              <button class=" button-delete comment-delete remove_comment_<?= $comment_id;?> hidden" id="remove_comment">
+               <img src="/img/cross.svg" alt="close">
+        </button>
+        <?php }	?>
+ </div>
+</li>
+<?php }
 
 
-			function get_comment($post_id, $start, $limit){ 
-				$comments = new Comments;
-				$user_f = new Users;
-				$sql_res = mysql_query("SELECT * FROM comments WHERE post_id='$post_id' ORDER BY comment_time ASC LIMIT $start, $limit") ;
+function get_comment($post_id, $start, $limit){ 
+   $comments = new Comments;
+   $user_f = new Users;
+   $sql_res = mysql_query("SELECT * FROM comments WHERE post_id='$post_id' ORDER BY comment_time ASC LIMIT $start, $limit") ;
 
        	   if(mysql_num_rows($sql_res) != 0 ){ // ===> Если запись есть
        	   	while ($arr = mysql_fetch_assoc($sql_res)) {

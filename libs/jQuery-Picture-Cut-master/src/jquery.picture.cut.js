@@ -4,13 +4,14 @@
             Version: 1.1
             ***********************************************************************************/
             $(function() {
+
                 __IMAGE_LOADING = "";
                 PcDialog = function(c, a, b, d, f, h, k, l, e, g) {
                     a = null == a ? "PictureCutDialog" + Math.round(99 * Math.random()) : a;
                     $dialog = $("<div></div>").attr({
                         id: a
                     });
-                    if (0 < $("#" + a).size()) {
+                    if (0 < $("#" + a).length) {
                         return !1
                     }
                     $dialog.css({
@@ -95,7 +96,7 @@
                     },
                     hide: function() {
                         var c = $("#dialog-UiConfirm");
-                        0 < c.size() && c.dialog("destroy").remove()
+                        0 < c.length && c.dialog("destroy").remove()
                     }
                 }
             });
@@ -243,6 +244,7 @@
                               if((dataArray.length) == maxFiles) {
                                 $('#container_image').css('display', 'none');
                             }
+                            init_click();
                         }
                     };
                     if (Options.ImageButtonCSS != undefined) Options.ImageButtonCSS = $.extend(defaults.ImageButtonCSS, Options.ImageButtonCSS);
@@ -274,7 +276,7 @@
                     if (Options.PastaCrop != undefined) Options.PluginFolderOnServer = Options.PastaCrop;
                     if (Options.CropWindowStyle.toLowerCase() == "bootstrap") {
                         var id = "picture_element_css_to_bootstrap";
-                        if ($("#" + id).size() == 0) {
+                        if ($("#" + id).length == 0) {
                             $('<link/>', {
                                 id: id,
                                 rel: 'stylesheet',
@@ -284,7 +286,7 @@
                         }
                     };
                     var basic_dependence_css_id = "picture_basic_dependence_css";
-                    if ($("#" + basic_dependence_css_id).size() == 0) {
+                    if ($("#" + basic_dependence_css_id).length == 0) {
                         $('<style type="text/css" id="' + basic_dependence_css_id + '">' + ".picture-element-principal{background:url(" + Options.DefaultImageButton + ") no-repeat 50% 50%}" + ".picture-dropped{border:2px #666 dashed!important;}" + '</style>').appendTo('head')
                     };
                     return this.each(function() {
@@ -351,8 +353,8 @@
                                 SelecaoRecorte.resizable({
                                     containment: "parent",
                                                 aspectRatio: 1,//InitRatio,
-                                                minWidth: (Swidth / 100) * 10,
-                                                minHeight: (Sheight / 100) * 10
+                                                minWidth: 500,//(Swidth / 100) * 10,
+                                                minHeight: 500//(Sheight / 100) * 10
                                             })
                                 ElemSelectProporcao = $("#JtuyoshiCrop #SelectProporcao");
                                 ElemSelectOrientacao = $("#JtuyoshiCrop #SelectOrientacao");
@@ -391,14 +393,14 @@
                                             SelecaoRecorte.resizable({
                                                 containment: "parent",
                                                 aspectRatio: 1,
-                                                minWidth: (Swidth / 100) * 10,
-                                                minHeight: (Sheight / 100) * 10
+                                                minWidth: 500,//(Swidth / 100) * 10,
+                                                minHeight: 500//(Sheight / 100) * 10
                                             })
                                         } else {
                                             var InitRatio = 0;
                                             if (ElemSelectProporcao.val() == "wide") {
                                                 InitRatio = 16 / 9;
-                                                Swidth = (response.currentWidth / 100) * 80;
+                                                Swidth = (response.currentWidth / 100) * 500;
                                                 Sheight = (Swidth / 16) * 9
                                             } else {
                                                 InitRatio = 1 / 1;
@@ -414,18 +416,19 @@
                                             SelecaoRecorte.resizable({
                                                 containment: "parent",
                                                 aspectRatio: 1,//InitRatio,
-                                                minWidth: (Swidth / 100) * 10,
-                                                minHeight: (Sheight / 100) * 10
+                                                minWidth: 500, //(Swidth / 100) * 10,
+                                                minHeight: 500//(Sheight / 100) * 10
                                             })
                                         }
                                     };
+                                    /* change 26.08*/
                                     if (Sheight > response.currentHeight) {
                                         Sheight = (response.currentHeight / 100) * 100;
                                         Swidth = (Sheight * 16) / 9;
                                         SelecaoRecorte.css({
-                                            "width": Swidth,
+                                            "width": "100%",
                                             "height": Sheight,
-                                            "left": (response.currentWidth - Swidth) / 2,
+                                            "left": "0",
                                             "top": (response.currentHeight - Sheight) / 2
                                         });                                                                            
                                     };
@@ -545,8 +548,9 @@
                                             Carregar_Imagem(Principal, Imagem);
                                             MontarSelecaoRecorte($("#JtuyoshiCrop #SelecaoRecorte"));
                                             Redimencionar_Janela()
-                                        }, "JSON")
-                                    })
+                                        }, "JSON");
+                                         Retorno_Requisicao(element, response, 1);
+                                    });
                                 };
                                 if (Options.CropWindowStyle == "jqueryui") PcDialog(Options.PluginFolderOnServer + CropWindowStyle[Options.CropWindowStyle], "JtuyoshiCrop", "Crop image", 900, 555, true, true, false, null, JpaneDialogCallBack);
                                 else if (Options.CropWindowStyle == "popstyle") JpaneDialogCrop(Options.PluginFolderOnServer + CropWindowStyle[Options.CropWindowStyle], "Crop image", 980, 555, true, false, false, null, JpaneDialogCallBack);
@@ -813,7 +817,7 @@ function set_post_db(attachment, message){
     data.append("post_id", (countLi+1));
     data.append("user_from", send_e);
     $.ajax({
-        url: "setpost",
+        url: "/application/Request/setpost.php",
         type: "POST",
         data: data,
         processData: false,
@@ -824,6 +828,26 @@ function set_post_db(attachment, message){
             pool_event();
             get_feedcount();
             
+            
+        }
+    });
+}
+$(function(){
+    init_click();
+});
+
+function init_click(){
+    //console.log(dataArray.length);
+    $(document).on('click', function(e) {
+   
+         var blah = $('#newpost-text').val();
+
+        if (dataArray.length == 0) {
+            if (!$(e.target).closest(".newpost").length) {
+                $(this).find('.newpost-active-part').addClass('hidden');
+            }
+
+            e.stopPropagation();
         }
     });
 }
@@ -837,7 +861,7 @@ function get_feedcount(){
     data.append("autofeed", 'true');
 
     $.ajax({
-        url: "setpost",
+        url: "/application/Request/setpost.php",
         type: "POST",
         data: data,
         async: true, 
@@ -861,6 +885,7 @@ $(document).on('click','.attach-image-close', function() {
     dataArray.splice(listid, 1);
     
     this.parentNode.remove();
+    init_click();
 
 });
 

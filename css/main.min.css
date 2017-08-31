@@ -227,6 +227,10 @@ body.state-profile .main {
     font-family: roboto, sans-serif;
 }
 
+.link-black img{
+    margin-right: 10px;
+}
+
 .link-black:active,
 .link-black:focus,
 .link-black:hover,
@@ -275,7 +279,7 @@ body.state-profile .main {
     position: absolute;
     width: 18px;
     height: 18px;
-    top: 0;
+    top: 22px;
     left: 28px;
     background-image: url(../img/search.svg);
     background-size: cover;
@@ -927,9 +931,13 @@ body.state-profile .main {
 }
 
 .post {
-    position: relative
+    position: relative;
+    
 }
-
+.post-non{
+   opacity: .5;
+   color: #4d546c;
+}
 .post-text {
     margin: 15px 0;
     font-size: 13px;
@@ -978,7 +986,8 @@ body.state-profile .main {
 }
 
 .post-account-menu .account-image img {
-    /* width: 30px */
+    width: 30px;
+    height: 30px;
 }
 
 .post-hr {
@@ -1213,8 +1222,9 @@ body.state-profile .main {
 
 .owner-contacts .link {
     font-family: "Proxima Nova Alt", sans-serif;
-    padding-left: 50px;
-    display: inline-block;
+    /*padding-left: 50px;*/
+    display: block;
+    margin: 10px 0 10px 0;
 }
 
 .owner-contacts-fb,
@@ -1279,13 +1289,13 @@ body.state-profile .main {
     position: absolute;
     padding: 0;
     display: block;
-    left: -220px;
+    left: -200px;
     margin: 0;
     -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
     box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
     width: 270px;
     right: 0;
-    top: 46px;
+    top: 40px;
     line-height: 16px;
 }
 
@@ -1543,7 +1553,7 @@ body.state-profile-guest .userprofile-counters {
 }
 
 .follow .follow-dog-image img,
-.family .follow-dog-image img {
+.family .follow-dog-image img:not(.image) {
     position: relative;
     top: 5px;
     width: 50px;
@@ -1854,8 +1864,9 @@ fieldset {
     cursor: pointer;
 }
 .settings-row .input {
-  width: 355px;
-  margin-top: 0; 
+    flex-grow: 0;
+    width: 65%;
+    margin-top: 0;
 }
 
 .settings-row label {
@@ -2142,6 +2153,9 @@ body.state-profile-guest .userprofile-counters {
   height: 30px; 
 }
 
+#profile-photo-popup{
+    z-index: 9999;
+}
 #profile-photo-popup .popup {
   max-width: 80vw;
   min-width: 300px;
@@ -2245,15 +2259,22 @@ body.state-profile-guest .userprofile-counters {
 
 }
 .userprofile-image .image{
-    max-height: 80%;
     width: 240px;
+    max-height: 240px;
+    object-fit: cover;
+    object-position: center;
 }
+.userprofile-image img:hover{
+    cursor: pointer;
+}
+
 .user_wall{
     padding: 0;
 }
 
 #removing_following_tofollow{
     display: none;
+    color: #ff5e3a;
 }
 .event-dog-image a img,
 .follow-dog-description img{
@@ -2334,21 +2355,30 @@ body.state-profile-guest .userprofile-counters {
     position: relative;
     top: -30px;
     left: 85%;
-    
+    transition: all 0.3s ease-in;
 
 }
+
+.my-profile-image.nonactive{
+    opacity: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
 .userprofile-image{
     max-height: 240px;
+    overflow: hidden;
+    position: relative;
 }
 .exit > div > form{
     width: 100%;
 }
 .user_wall_event{
     background-color: #fff;
-     -webkit-border-radius: 4px;
+    -webkit-border-radius: 4px;
     border-radius: 4px;
     padding:  20px 10px 10px 10px;
- 
+
 }
 
 .event-dog-image-event{
@@ -2367,6 +2397,7 @@ body.state-profile-guest .userprofile-counters {
 }
 .get-all-events{
     text-align: center;
+    margin-bottom: 20px !important;
 }
 
 .get-all-events a{
@@ -2375,6 +2406,119 @@ body.state-profile-guest .userprofile-counters {
 .ui-dialog .ui-dialog-titlebar-close{
     width: 50px !important;
 }
+
+.state_follow_sidebar,
+.follow-list-item-state{
+    height: 40px !important;
+}
+.search-block{
+    background-color: #f8f9fa;
+    max-width: 270px;
+    position: absolute;
+    left: 150px;
+    min-width: 255px;
+    overflow-y: auto;
+    max-height: 500px;
+    border-radius: 5px;
+    padding: 15px 10px;
+    display: none;
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    top: 52px;
+}
+
+#search-list{
+    margin: 0;
+}
+
+
+
+.search-block .follow-dog-description{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#wiev_all_search{
+    text-align: center;
+}
+
+.image-container-default-bg > .my-profile-image{
+    width: 25px;
+    position: relative;
+    top: 0;
+    left: 0;
+
+}
+
+#button_crop_recortar,
+#button_crop_original {
+    font-family: roboto, sans-serif;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background: #20aa93;
+    color: #fff;
+    -webkit-transition: all .15s ease-in;
+    transition: all .15s ease-in;
+    border: none;
+    padding: 0 20px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#button_crop_recortar:hover,
+#button_crop_original:hover {
+    background: #20aa93;
+    -webkit-box-shadow: 0 10px 25px 0 rgba(32, 170, 147, .25);
+    box-shadow: 0 10px 25px 0 rgba(32, 170, 147, .25);
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+.non-posts{
+    text-align: center;
+}
+
+.pic{
+    width: 30px;
+    text-align: center;
+    display: inline-block;
+}
+
+.feed-btn{
+  padding: 0px 10px;
+  margin-left: 30px;
+
+}
+
+.find-keyword{
+    /*background-color: #9ca0ae;*/
+
+}
+.filter-category{
+    background-color: rgba(48, 55, 63, .05);
+}
+
+
+@media only screen and (max-width: 1440px) {
+    .search-block .follow-dog-image img{
+        width: 30px;
+        height: 30px;
+    }
+    .search-block .follow-dog-name{
+        font-size: 13px;
+    }
+    .search-block .follow-dog-age,
+    .search-block .follow-dog-breed{
+        font-size: 12px;
+    }
+}
+
 @media only screen and (max-width: 1200px) {
     /*changes from 19.07 start*/
     .popup-photo {

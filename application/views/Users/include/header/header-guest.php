@@ -9,14 +9,6 @@ $id = $_SESSION['user_id']; //  id Пользователя
 $uid = $_SESSION['get_id'];
 $get_id = $_SESSION['get_id'];
 
-
-if (($_SESSION['family']) != null ) {
-
-	$home = 'user?id='. $_SESSION['family'];
-} else {
-	$home = 'user?id='.$_SESSION['user_id'];
-}
-
 if(isset($_POST['LogUot'])){
  loguot();} // > Кнопка - ВЫХОД
  $Wall = new Wall;
@@ -25,14 +17,25 @@ if(isset($_POST['LogUot'])){
  $feed = new myFeed;
  $valuation = new Valuat;
  $follow = new Followers;
-  $discover = new Users_Discover;
+ $discover = new Users_Discover;
+ $notifi = new Class_Notification;
+ $setting = new Setting;
+ $searh = new Search;
+ $main_url = new Main_url;
+
+ if (($_SESSION['family']) != null ) {
+
+	$home = $main_url->get_url($_SESSION['family']); //'/id'. $_SESSION['family'];
+} else {
+	$home = $main_url->get_url($_SESSION['user_id']);
+}
 
  $myaacountuser = $user->my_account();
  $user_name = $myaacountuser['user_name']; 
  $location =  $myaacountuser['location'];
 
  if (!is_numeric($uid)) {
- 	$mypage = $_SESSION['family'];
+ 	$mypage = $_SESSION['family_id'];
  } else {
  	$mypage = $_SESSION['user_id'];
  }
@@ -51,11 +54,11 @@ if(isset($_POST['LogUot'])){
  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
  	<!-- Template Basic Images Start -->
- 	<meta property="og:image" content="img/Logo.jpg">
- 	<link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon">
- 	<link rel="apple-touch-icon" href="img/favicon/apple-touch-icon.png">
- 	<link rel="apple-touch-icon" sizes="72x72" href="img/favicon/apple-touch-icon-72x72.png">
- 	<link rel="apple-touch-icon" sizes="114x114" href="img/favicon/apple-touch-icon-114x114.png">
+ 	<meta property="og:image" content="/img/Logo.jpg">
+ 	<link rel="shortcut icon" href="/img/favicon/favicon.ico" type="image/x-icon">
+ 	<link rel="apple-touch-icon" href="/img/favicon/apple-touch-icon.png">
+ 	<link rel="apple-touch-icon" sizes="72x72" href="/img/favicon/apple-touch-icon-72x72.png">
+ 	<link rel="apple-touch-icon" sizes="114x114" href="/img/favicon/apple-touch-icon-114x114.png">
  	<!-- Template Basic Images End -->
 
  	<!-- Bootstrap (latest) Grid Styles Only -->
@@ -114,7 +117,7 @@ if(isset($_POST['LogUot'])){
 				<ul class="list flex-wrapper">
 					<li class="list-item account-notifications">
 						<a href="#">
-							<img src="img/bell.svg" alt="notifications">
+							<img src="/img/bell.svg" alt="notifications">
 						</a>
 					</li>
 
@@ -127,7 +130,7 @@ if(isset($_POST['LogUot'])){
 
 							</div>
 							<div class="account-image">
-								<img src="img/paw-avatar.png" alt="pet-image" class="image">
+								<img src="/img/paw-avatar.png" alt="pet-image" class="image">
 							</div>
 							<div class="account-dropdown-arrow">
 							</div>

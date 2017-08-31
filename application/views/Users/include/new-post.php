@@ -8,40 +8,31 @@
 							<div class="attach hidden">
 								<hr class="hr  hr-full-width hr-full-width hr-full-width-exp family-hr">
 								<div id="result"></div>
-								 <!-- <div class="attach-image">
-								 									<img src="img/attach2.png" alt="" class="image ">
-								 									<button class="attach-image-close">
-								 										<img src="img/red-cross.svg" alt="" class="image">
-								 									</button>
-								 								</div>
-								 								<div class="attach-image">
-								 									<img src="img/attach2.png" alt="" class="image ">
-								 									<button class="attach-image-close">
-								 										<img src="img/red-cross.svg" alt="" class="image">
-								 									</button>
-								 								</div>  -->
 								<div class="attach-image attach-image-placeholder" id="container_image"></div> 
 								<script>
-								$("#container_image").PictureCut({
-									InputOfImageDirectory       : "image",
-									PluginFolderOnServer        : "/libs/jQuery-Picture-Cut-master/",
-									FolderOnServer              : "/cache/",
-									EnableCrop                  : true,
-									CropWindowStyle             : "Bootstrap",
-									MaximumSize                 : 1024,
-									MinimumHeightToResize       : 630
-								});
-							</script> 
+									$(window).on('load', function() { 
+										$("#container_image").PictureCut({
+											InputOfImageDirectory       : "image",
+											PluginFolderOnServer        : "/libs/jQuery-Picture-Cut-master/",
+											FolderOnServer              : "/cache/",
+											EnableCrop                  : true,
+											CropWindowStyle             : "Bootstrap",
+											MaximumSize                 : 1024,
+											MinimumHeightToResize       : 630
+										});
+									});
+
+								</script> 
 							</div>
 							<hr class="hr  hr-full-width hr-full-width hr-full-width-exp family-hr">
 							<div class="flex-wrapper flex-wrapper-jc-space-between">
 								<div class="flext-wrapper-left-side">
 									<button class="link button   button-cta-gray post-button post-button-upload-photos userprofile-edit-button">
-										<img src="img/photo.svg" alt="" class="image sub">
+										<img src="/img/photo.svg" alt="" class="image sub">
 										<span>Upload photos</span>
 									</button>
 									<button class="link button button-cta-gray post-button userprofile-edit-button">
-										<img src="img/video.svg" alt="" class="image sub">
+										<img src="/img/video.svg" alt="" class="image sub">
 										<span>Upload videos</span>
 									</button>
 								</div>
@@ -52,9 +43,9 @@
 										</div>
 										<div class="account-dropdown-arrow"></div>
 										<div class="tile account-choice-dropdown hidden">
-											<p class=" account-choice-dropdown-title">Liking and commenting as:</p>
+											<p class=" account-choice-dropdown-title">New Post as:</p>
 											<ul class="list follow-dogs">
-												<?php require_once "menu/account-choice.php"; ?>
+												<?php $Wall->list_follow_dog(); ?>
 											</ul>
 										</div>
 									</div>

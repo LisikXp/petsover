@@ -2,14 +2,15 @@
 class Users{
 
 	
-	public $dog_name;
+	public $name;
 	public $breed;
 	public $location;
 	public $user_photo;
 	public $sex;
 	public $birthday;
-	public $family;
+	public $family_id;
 	public $user_id;
+	public $count_pets;
 	public $owner;
 	public $owner_photo;
 	public $network_link;
@@ -25,55 +26,39 @@ class Users{
 			$uid = $_SESSION['get_id'];
 			break;
 		}
-		
-		if (is_numeric($uid)) {
-			$result = mysql_query("SELECT * FROM users WHERE user_id='$uid'");
-		} else{
-			$result = mysql_query("SELECT * FROM users WHERE user_name='$uid'");
+		$owid = $_SESSION['owner_id'];
+		if ($_SESSION['user_id'] == $_SESSION['get_id']) {
+			$result = mysql_query("SELECT * FROM user WHERE user_id='$uid' AND profile='1' OR owner_id='$owid' AND profile='1'");
+		} else {
+			$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
 		}
-		
 		while ($row = mysql_fetch_assoc($result)) { 
 			
 			$this->user_id = $row['user_id'];
-			$this->dog_name = $row['dog_name'];
-			$this->owner = $row['user_name'];
-
-			if ($row['maine_photo'] != null) {
-				$this->owner_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $row['maine_photo'];
-			} else{
-				$this->owner_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/no-photo.png";
-			}
-			
-			if ($row['user_name'] == null) {
-				$fam = $row['family'];
-				$fresult = mysql_query("SELECT * FROM users WHERE family='$fam'");
-				$frow = mysql_fetch_assoc($fresult);
-				$this->owner = $frow['user_name'];
-				if ($frow['maine_photo'] != null) {
-					$this->owner_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $frow['maine_photo'];
-				} else{
-					$this->owner_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/paw-avatar.png";
-				}
-			}
-
-
-			
+			$this->name = $row['name'];
+			$this->get_owner($uid);
 			$this->breed = $row['breed'];
-			$this->location = $row['location'];
+			if ($row['owner'] == 1) {
+				$this->location = $row['location'];
+			}
+			$this->get_network_link($row['owner_id']);
 
-			if ($row['user_photo'] !=null) {
-				$this->user_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $row['user_photo'];
+			if ($row['photo'] != null) {
+				$this->user_photo = "<img src='http://".$_SERVER['HTTP_HOST'] . "/img/avatar/" .$row['photo'] . "' alt='' class='image my-profile-image-change'>";//"http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $row['photo'];
 			} else{
-				$this->user_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/no-photo.png";
+				$this->user_photo = "<img src='http://" .$_SERVER['HTTP_HOST']. "/img/avatar/no-photo.png' alt='' class='image my-profile-image-change nonephoto'>";//"http://" .$_SERVER['HTTP_HOST']. "/img/avatar/no-photo.png";
 			}
 			
 			
 			$this->sex = $row['sex'];
-			$this->family = $row['family'];
+			$this->family_id = $row['family_id'];
 			$timestamp=$row['birthday'];
 			
 			$this->birthday = (date('Y') - gmdate("Y", $timestamp));
-			$this->network_link = $row['network_link'];
+			
+			if ($row['family_id'] != 0 && $row['profile'] == 1) {
+				$this->breed = $this->get_count_family_members($uid)  . " Pets";
+			}
 
 		}
 		mysql_free_result($result);
@@ -81,108 +66,113 @@ class Users{
 
 	function my_account(){
 		$uid = $_SESSION['user_id'];
-		$result = mysql_query("SELECT * FROM users WHERE user_id='$uid'");
+		$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
 		$row = mysql_fetch_assoc($result);
 		return $row;
-		/*$this->user_name = $row['user_name'];
-		$this->maine_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $row['maine_photo'];
-*/
 	}
 
-	function get_account_choice(){
-		$family = new Family;
-		$uid = $_SESSION['user_id'];
-		$uresult = mysql_query("SELECT * FROM users WHERE user_id='$uid'");
-		$urow = mysql_fetch_assoc($uresult);?>
-		<li class="list-item follow-dog follow-dog-option current" id="<?php echo $urow['user_id']; ?>">
-			<div class="flex-wrapper">
-				<div class="follow-dog-image">
-					<img src="<?php echo "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $urow['user_photo']; ?>" alt="dog picture" id="follow-dog-image_<?php echo $urow['user_id']; ?>">
-				</div>
-				<div class="follow-dog-description" id="<?php echo $urow['user_id']; ?>">
-					<p class="follow-dog-breed">
-						<?php echo $urow['dog_name']; ?>
-					</p>
-					<p class="follow-dog-breed">
-						<?php echo $urow['breed']; ?>
-					</p>
-				</div>
-			</div>
-		</li>
-		<li class="list-item follow-dog follow-dog-option" id="<?php echo $urow['user_name']; ?>">
-			<div class="flex-wrapper">
-				<div class="follow-dog-image">
-					<img src="<?php echo "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" .$urow['maine_photo']; ?>" alt="dog picture" id="follow-dog-image_<?php echo $urow['user_name']; ?>">
-				</div>
-				<div class="follow-dog-description" id="<?php echo $urow['user_name']; ?>">
-					<p class="follow-dog-breed">
-						<?php echo $urow['user_name']; ?>
-					</p>
-					<p class="follow-dog-breed">
-						Owner
-					</p>
-				</div>
-			</div>
-		</li>
-		<?php 
+	function my_owner(){
+		$uid = $_SESSION['owner_id'];
+		$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
+		$row = mysql_fetch_assoc($result);
+		return $row;
+	}
+
+	function get_network_link($id){
+		$result = mysql_query("SELECT * FROM user WHERE owner_id='$id'");
+		$row = mysql_fetch_assoc($result);
+		$this->network_link = $row['network_link'];
+	}
+
+	function get_owner($id){
+		$result = mysql_query("SELECT * FROM user WHERE owner_id='$id'");
+		if (mysql_num_rows($result) != 0) {
+			$row = mysql_fetch_assoc($result);
+			$name = $row['name'];
+			$photo = $row['photo'];
+		} else {
+			$uid = $_SESSION['user_id'];
+			$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
+			$row = mysql_fetch_assoc($result);
+			$name = $row['name'];
+			$photo = $row['photo'];
+		}
+		
+		$this->owner = $name;
+		if ($photo != null) {
+			$this->owner_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/" . $photo;
+		} else{
+			$this->owner_photo = "http://" .$_SERVER['HTTP_HOST']. "/img/avatar/no-photo.png";
+		}
+	}
+
+	function get_uid_by_ownerid(){
+		$uid = $_SESSION['owner_id'];
+		$result = mysql_query("SELECT * FROM user WHERE owner_id='$uid'");
+		if (mysql_num_rows($result) != 0) {
+			while ($row = mysql_fetch_assoc($result)) {
+				$arr[] = $row['user_id'];
+			}
+			return $arr;
+		}
+	}
+
+	function get_count_account(){
+		$result = mysql_query("SELECT * FROM user");
+		if(mysql_num_rows($result) != 0 ){ 
+			return mysql_num_rows($result);
+		}
 	}
 
 	function get_all_users_id(){
 		$uid = $_SESSION['user_id'];
-		$result = mysql_query("SELECT * FROM users WHERE user_id<>'$uid'");
+		$result = mysql_query("SELECT * FROM user");
 		if(mysql_num_rows($result) != 0 ){ 
 			return mysql_fetch_assoc($result);
 		}
 	}
 	
 	function users($uid){
-		if (!is_numeric($uid)) {
-			$fresult = mysql_query("SELECT * FROM family WHERE f_name='$uid'");
-			if(mysql_num_rows($fresult) != 0 ){ 
-				return mysql_fetch_assoc($fresult);
 
-			} else {
-
-				$result = mysql_query("SELECT * FROM users WHERE user_name='$uid'");
-				return mysql_fetch_assoc($result);
-			}
-			
-		} else {
-			$result = mysql_query("SELECT * FROM users WHERE user_id='$uid'");
-			if(mysql_num_rows($result) != 0 ){ 
-				return mysql_fetch_assoc($result);
-			}
-		}
-
-	}
-
-	function users_sidebar($uid){
-		$result = mysql_query("SELECT * FROM users WHERE user_id='$uid'");
+		$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
 		if(mysql_num_rows($result) != 0 ){ 
 			return mysql_fetch_assoc($result);
 		}
 	}
 
+	function my_breed(){
+		$uid = $_SESSION['owner_id'];
+		$result = mysql_query("SELECT * FROM user WHERE owner_id='$uid'");
+		if(mysql_num_rows($result) != 0 ){ 
+			$arr = mysql_fetch_assoc($result);
+			return $arr['breed'];
+		}
+
+	}
+
 	function get_count_family_members($family){
-		$result = mysql_query("SELECT * FROM users WHERE family='$family'");
+		$result = mysql_query("SELECT * FROM user WHERE family_id='$family' AND user_id<>$family AND owner<>'1'");
 		if(mysql_num_rows($result) != 0 ){ 
 			return mysql_num_rows($result);
 		}
 	}
 
+	function get_id_user($uid){
+
+		//$_SESSION['get_id'] = $uid;
+		
+	}
+
 	function get_user(){
 		$uid = $_SESSION['get_id'];
-		$result = mysql_query("SELECT * FROM users WHERE user_id='$uid'");
+		$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
 
 		while ($row = mysql_fetch_assoc($result)) { 
-			if ($row["dog_name"] != null) { 
-
+			if ($row["owner_id"] != 0) { 
 				include_once $_SERVER['DOCUMENT_ROOT']. "/application/views/Users/include/Profile-Family.php";
-
 			} else{ 
 				include_once $_SERVER['DOCUMENT_ROOT']. "/application/views/Users/include/Profile-Guest.php";
-				
-				
+
 			} 
 		}
 
@@ -190,8 +180,10 @@ class Users{
 	}
 
 	function update_profile($uid, $name, $breed, $bdate, $sex, $avatar){
-		$result = mysql_query("UPDATE users SET dog_name='$name', user_photo='$avatar', breed='$breed', birthday='$bdate', sex='$sex'  WHERE user_id='$uid'");
+		$result = mysql_query("UPDATE user SET name='$name', photo='$avatar', breed='$breed', birthday='$bdate', sex='$sex'  WHERE user_id='$uid'");
 		if ($result == "true") {
+			$wall = new Wall;
+			$wall->set_main_photo_post($uid, $uid, $avatar);
 			return "true";
 		} else{
 			return "false";
@@ -199,20 +191,86 @@ class Users{
 
 	}
 
+	function set_owner(){
+		$uid = $_SESSION['owner_id'];
+		$result = mysql_query("UPDATE user SET owner_id='$uid', profile='0' WHERE user_id='$uid'");
+	}
+
+	function check_count_account(){
+		$uid = $_SESSION['owner_id'];
+		$result = mysql_query("SELECT * FROM user WHERE owner_id='$uid'");
+		return mysql_num_rows($result);
+	}
+
+	function get_location(){
+		$uid = $_SESSION['owner_id'];
+		$result = mysql_query("SELECT * FROM user WHERE user_id='$uid'");
+		$arr = mysql_fetch_assoc($result);
+		return $arr['location'];
+	}
+
 	/*----add profile family-----*/
 	function add_another_dog_profile($dog_name, $avatar, $breed, $birthday, $sex){
-		$uid = $_SESSION['user_id'];
-		$dogname = $this->users($uid);
-		if ($dogname["dog_name"] != null) {
-			# code...
-
-			$dog_family = $_SESSION['family'];
-			$result = mysql_query("INSERT INTO users SET dog_name='$dog_name', user_photo='$avatar', breed='$breed', birthday='$birthday', sex='$sex', family='$dog_family'");
+		$uid = $_SESSION['owner_id'];
+		$count_account = $this->check_count_account();
+		$location = $this->get_location();
+		if ($count_account == 0 ) {
+			$this->set_owner();
+			$profile = 1;
 		} else {
-			$this->update_profile($uid, $dog_name, $breed, $birthday, $sex, $avatar);
+			$profile = 0;
 		}
+		if ($_SESSION['family_id']) {
+			$family_id = $_SESSION['family_id'];
+		} else{
+			$family_id = 0;
+		}
+		$result = mysql_query("INSERT INTO user SET name='$dog_name', photo='$avatar', breed='$breed', family_id='$family_id', location='$location', birthday='$birthday', sex='$sex', owner_id='$uid', profile='$profile'");
+		$pid = mysql_insert_id();
+		$result = mysql_query("SELECT * FROM user WHERE owner_id='$uid' AND profile='1'") or die(mysql_error()); 
+		$arruser = mysql_fetch_assoc($result);
+		$_SESSION['user_id'] = $arruser['user_id'];
+		$wall = new Wall;
+		$wall->set_main_photo_post($pid, $pid, $avatar);
+
+		
 	}
 	/*-----end family-----*/
 
-}
-?>
+	function get_user_account($uid, $foto, $name, $breed, $location, $numb){ 
+		$followers = new Followers;
+		$main_url = new Main_url;?>
+		<li class="list-element followers followers_<?= $uid; ?>" id="<?= $uid; ?>">
+			<div class="flex-wrapper follow-list-item">
+
+				<div class="flex-wrapper user_follower_photo">
+					<div class="follow-dog-image follow-dog-image-centered">
+						<a href="<?= $main_url->get_url($uid); ?>">
+							<img src="http://<?= $_SERVER['HTTP_HOST']. '/img/avatar/' . $foto;?>" alt="dog picture">
+						</a>
+					</div>
+					<div class="follow-dog-description">
+						<a href="<?= $main_url->get_url($uid); ?>">
+							<p class="follow-dog-name follow-dog-name-centered">
+								<?= $name;?>
+							</p>
+						</a>
+						<p class="follow-dog-breed ">
+							<?= $breed;?>
+						</p>
+						<p class="follow-dog-age">
+							<a href="/Discover?location=<?php echo str_replace(' ', '+', $location); ?>" class="link link-blue">
+								<?= $location;?>
+							</a>
+						</p>
+					</div>
+				</div>
+				<?php if ($numb == 1) {
+					$followers->serch_follow($uid);
+				} ?>
+			</div>
+		</li>
+		<?php }
+
+	}
+	?>

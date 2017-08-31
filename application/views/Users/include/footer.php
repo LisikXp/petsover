@@ -15,14 +15,16 @@
 	</main>
 
 	<script>
-		$( function() {
+		$(function() {
 			$("#datepicker").datepicker({
 				autoclose: true, 
-				todayHighlight: true
+				todayHighlight: true,
+				startDate: new Date('1980-01-01')
 			}).datepicker('update', new Date());
 			$("#newdatepicker").datepicker({
 				autoclose: true, 
-				todayHighlight: true
+				todayHighlight: true,
+				startDate: new Date('1980-01-01')
 			}).datepicker('update', new Date());
 			
 			function mainereadURL(input) { /* превью картинки*/
@@ -38,13 +40,30 @@
 				}
 			}
 
+			function mainereadURLadd(input) { /* превью картинки*/
+
+				if (input.files && input.files[0]) {
+					var reader = new FileReader();
+
+					reader.onload = function (e) {
+						$('#maine_photo_image_add').attr('src', e.target.result);
+					};
+
+					reader.readAsDataURL(input.files[0]);
+				}
+			}
+
 			function readURL(input) { /* превью картинки*/
 
 				if (input.files && input.files[0]) {
 					var reader = new FileReader();
 
 					reader.onload = function (e) {
-						$('#add_image').attr('src', e.target.result);
+						$('#maine_photo_image').attr('src', e.target.result);
+						$('#profile-photo-popup').addClass('flex-wrapper');
+						$('.btn-main-change').attr('id', 'button_resize_setting');
+						//$('#profile-photo-popup-singl-profile').find('.image-profile-current>img').attr('src', e.target.result);
+						//$('#profile-photo-popup-singl-profile').addClass('flex-wrapper');
 
 					};
 
@@ -58,8 +77,9 @@
 					var reader = new FileReader();
 
 					reader.onload = function (e) {
-						$('#family_add_image').attr('src', e.target.result);
-
+						$('#maine_photo_image').attr('src', e.target.result);
+						$('#profile-photo-popup').addClass('flex-wrapper');
+						$('.btn-main-change').attr('id', 'button_resize_fam');
 					};
 
 					reader.readAsDataURL(input.files[0]);
@@ -72,8 +92,9 @@
 					var reader = new FileReader();
 
 					reader.onload = function (e) {
-						$('#pet_add_image').attr('src', e.target.result);
-
+						$('#maine_photo_image').attr('src', e.target.result);
+						$('#profile-photo-popup').addClass('flex-wrapper');
+						$('.btn-main-change').attr('id', 'button_resize_pet');
 					};
 
 					reader.readAsDataURL(input.files[0]);
@@ -82,20 +103,28 @@
 
 			$("#maine_userfile").change(function(){
 				mainereadURL(this);
+
+				$('#profile-photo-popup').addClass('flex-wrapper');
+				$('#profile-photo-popup').addClass('family');
 				$('.imgareaselect-outer').css('display', 'none');
 				$('.imgareaselect-selection').parent().css('display', 'none');
 				
 			});
+
 			$("#family_userfile").change(function(){
 				familyreadURL(this);
+				$('.tal label').css('display', 'none');
 			});
 			$("#pet_userfile").change(function(){
 				petreadURL(this);
+				$('.tal label').css('display', 'none');
 			});
 
 
 			$("#add_userfile").change(function(){
 				readURL(this);
+				$('.tal label').css('display', 'none');
+
 			});
 		} );
 		
@@ -112,10 +141,18 @@
 						<div class="profile-edit-image-container">
 							<img id="add_image" class="image image-photo-bg" />
 							<div class="image-container-default-bg">
+								
 								<label class="btn btn-default btn-sm center-block btn-file">
 									<img class="image" src="/img/photo-camera.svg" />   
 									<i class="fa fa-upload fa-2x" aria-hidden="true"></i>
-									<input id="add_userfile" type="file" name="filename" size="5000" style="display: none;">
+									<input  id="add_userfile" type="file" name="filename" size="5000" style="display: none;" onchange="fileSelectHandler(this);">
+
+									<input type="hidden" id="x1" name="x1" style="display: none;">
+									<input type="hidden" id="y1" name="y1" style="display: none;">
+									<input type="hidden" id="x2" name="x2" style="display: none;">
+									<input type="hidden" id="y2" name="y2" style="display: none;">
+									<input type="hidden" id="w" name="w" style="display: none;">
+									<input type="hidden" id="h" name="h" style="display: none;">
 								</label>
 							</div>
 						</div>
@@ -158,8 +195,8 @@
 							<div class="settings-row settings-row-half">
 								<select type="text" class="input" id="add-sex" >
 									<option value="Sex">Sex</option>
-									<option value="Sex">Male</option>
-									<option value="Breed">Female</option>
+									<option value="Male">Male</option>
+									<option value="Female">Female</option>
 								</select>
 							</div>
 
@@ -196,10 +233,18 @@
 							<div class="profile-edit-image-container">
 								<img id="family_add_image" class="image image-photo-bg" />
 								<div class="image-container-default-bg">
+
 									<label class="btn btn-default btn-sm center-block btn-file">
 										<img class="image" src="/img/photo-camera.svg" />   
 										<i class="fa fa-upload fa-2x" aria-hidden="true"></i>
-										<input id="family_userfile" type="file" name="filename" size="5000" style="display: none;">
+										<input  id="family_userfile" type="file" name="filename" size="5000" style="display: none;" onchange="fileSelectHandler(this);">
+
+										<input type="hidden" id="x1" name="x1" style="display: none;">
+										<input type="hidden" id="y1" name="y1" style="display: none;">
+										<input type="hidden" id="x2" name="x2" style="display: none;">
+										<input type="hidden" id="y2" name="y2" style="display: none;">
+										<input type="hidden" id="w" name="w" style="display: none;">
+										<input type="hidden" id="h" name="h" style="display: none;">
 									</label>
 								</div>
 							</div>
@@ -216,10 +261,18 @@
 							<div class="profile-edit-image-container">
 								<img id="pet_add_image" class="image image-photo-bg" />
 								<div class="image-container-default-bg">
+
 									<label class="btn btn-default btn-sm center-block btn-file">
 										<img class="image" src="/img/photo-camera.svg" />   
 										<i class="fa fa-upload fa-2x" aria-hidden="true"></i>
-										<input id="pet_userfile" type="file" name="filename" size="5000" style="display: none;">
+										<input  id="pet_userfile" type="file" name="filename" size="5000" style="display: none;" onchange="fileSelectHandler(this);">
+
+										<input type="hidden" id="x1" name="x1" style="display: none;">
+										<input type="hidden" id="y1" name="y1" style="display: none;">
+										<input type="hidden" id="x2" name="x2" style="display: none;">
+										<input type="hidden" id="y2" name="y2" style="display: none;">
+										<input type="hidden" id="w" name="w" style="display: none;">
+										<input type="hidden" id="h" name="h" style="display: none;">
 									</label>
 								</div>
 							</div>
@@ -262,8 +315,8 @@
 								<div class="settings-row settings-row-half">
 									<select type="text" class="input" id="new-sex" >
 										<option value="Sex">Sex</option>
-										<option value="Sex">Male</option>
-										<option value="Breed">Female</option>
+										<option value="Male">Male</option>
+										<option value="Female">Female</option>
 									</select>
 								</div>
 
@@ -288,7 +341,7 @@
 			<div class="popup popup-photo" >
 				<div class="tile">
 					<div class="maine-popup-image">
-						<img src="img/test-post-image.jpg" alt="" class="image">
+						<img src="/img/test-post-image.jpg" alt="" class="image">
 					</div>
 					<div class="post-popup-details">
 						<div class="flex-wrapper">
@@ -329,7 +382,7 @@
 									<!-- <a href="#" class="link button button-cta-green contest-button">Upload image</a> -->
 									<label class="link button button-cta-green contest-button info">
 										Upload image
-										<input class="link button button-cta-green contest-button" value="Upload image" id="maine_userfile" type="file" name="filename" size="5000" style="display: none;" onchange="fileSelectHandler();">
+										<input class="link button button-cta-green contest-button" value="Upload image" id="maine_userfile" type="file" name="filename" size="5000" style="display: none;" onchange="fileSelectHandler(this);">
 
 										<input type="hidden" id="x1" name="x1" style="display: none;">
 										<input type="hidden" id="y1" name="y1" style="display: none;">
@@ -347,7 +400,7 @@
 							<div class="profile-edit-image-container">
 
 								<div class="image-profile-current">
-									<img src="img/photo-camera.svg" alt="" class="image" id="maine_photo_image">
+									<img src="/img/photo-camera.svg" alt="" class="image" id="maine_photo_image">
 								</div>
 							</div>
 
@@ -357,7 +410,7 @@
 							<a href="#" class="link link-gray" data-action="close-popup">
 								Cancel
 							</a>
-							<a href="#" class="link button button-cta-green contest-button" id="button_resize">
+							<a href="#" class="link button button-cta-green contest-button btn-main-change" id="button_resize">
 								Save changes
 							</a>
 						</div>
@@ -365,6 +418,7 @@
 				</div>
 			</div>
 		</div>
+
 
 
 	</body>

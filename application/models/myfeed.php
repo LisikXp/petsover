@@ -4,9 +4,9 @@ class myFeed{
 
 	function get_follow_id(){
 		
-		if(($_SESSION['family']) != null ) {
+		if(($_SESSION['family_id']) != null ) {
 			$wall_feed = new Wall;
-			$owner_id = $_SESSION['family'];
+			$owner_id = $_SESSION['family_id'];
 		} else {
 			$owner_id = $_SESSION['user_id'];
 		}
@@ -21,13 +21,23 @@ class myFeed{
 			}
 
 			$this->get_feed_post($arra);
+		} else {
+			$this->non_posts();
 		}
 	}
 
+	function non_posts(){ ?>
+	<li class="tile users_wall_posts non-posts">
+	<div class="post">You do not following anyone, find someone 
+	<a href="/follow" class="link button button-cta-green contest-button feed-btn">Who to follow</a>
+		</div>
+	</li>
+	<?php	}
+
 	function get_count_feedpost(){
-		if(($_SESSION['family']) != null ) {
+		if(($_SESSION['family_id']) != null ) {
 			$wall_feed = new Wall;
-			$owner_id = $_SESSION['family'];
+			$owner_id = $_SESSION['family_id'];
 		} else {
 			$owner_id = $_SESSION['user_id'];
 		}
@@ -43,7 +53,7 @@ class myFeed{
 			$arra = array_unique($arrau);
 			for ($i=0; $i < count($arra); $i++) { 
 				$uid[$i] = $arra[$i];
-				$sql_res = mysql_query("SELECT post_id FROM wall WHERE user_owner='$uid[$i]'");
+				$sql_res = mysql_query("SELECT post_id FROM wall WHERE user_owner='$uid[$i]' OR user_from='$arra[$i]'");
 				if(mysql_num_rows($sql_res) != 0 ){
 
 					for ($t=0; $t < mysql_num_rows($sql_res); $t++) { 
@@ -66,14 +76,14 @@ class myFeed{
 		for ($i=0; $i < count($arra); $i++) { 
 			
 			//echo $arra[$i];
-			$sql_res = mysql_query("SELECT post_id FROM wall WHERE user_owner='$arra[$i]'");
+			$sql_res = mysql_query("SELECT post_id FROM wall WHERE user_owner='$arra[$i]' OR user_from='$arra[$i]'");
 			if(mysql_num_rows($sql_res) != 0 ){
 				
 				for ($t=0; $t < mysql_num_rows($sql_res); $t++) { 
 					
 					$arr[] = mysql_fetch_assoc($sql_res);
 				}
-			}
+			} 
 		}
 		rsort($arr);
 		for ($g=0; $g < count($arr); $g++) { 

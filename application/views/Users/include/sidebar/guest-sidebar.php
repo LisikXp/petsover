@@ -4,9 +4,9 @@
 							<?php echo $user_name;?>
 						</h3>
 
-						<a href="Discover?location=<?php echo str_replace(' ', '+', $location); ?>" class="link link-blue userprofile-location"><?php echo $location;?></a>
+						<a href="/Discover?location=<?php echo str_replace(' ', '+', $location); ?>" class="link link-blue userprofile-location"><?php echo $location;?></a>
 						<?php if ($_SESSION['user_id'] == $uid) { ?>
-						<a href="Settings" class="link button button-full-width userprofile-edit-button  button-cta-gray ">Edit profile</a>
+						<a href="/Settings" class="link button button-full-width userprofile-edit-button  button-cta-gray ">Edit profile</a>
 						<?php } else{ 
 
 						} ?>

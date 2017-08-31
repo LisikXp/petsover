@@ -16,9 +16,11 @@
 								<div class="tile account-choice-dropdown hidden dropdown">
 									<ul class="list follow-dogs ">
 										<li class="list-item account-action">
-											<p class="no-margin">
-												Account Settings
-											</p>
+											<a href="/Settings">
+												<p class="no-margin">
+													Account Settings
+												</p>
+											</a>
 										</li>
 										<li class="list-item account-action">
 											<form action="" method="POST">

@@ -16,7 +16,7 @@
 				<?php	} ?>
 				<ul class="user_wall" id="user_wall" data-user="<?= $get_id;?>">
 					<?php 
-					$Wall->get_posts($_GET['id'], 0, 20);
+					$Wall->get_posts($get_id, 0, 20);
 					?>
 				</ul>
 				<?php if ($Wall->get_all_count_post($get_id) <= 20 ) {?>

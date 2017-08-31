@@ -9,7 +9,7 @@
 				
 			</div>
 			<div class="user_wall_event col-sm-6 col-sm-6-custom">
-				<h3 class="heading heading-h3 heading-no-margin">Events</h3>
+				<h3 class="heading heading-h3 heading-no-margin">Notification</h3>
 				<hr class="hr-full-width">
 				<ul class="user_wall user_wall_event" id="user_wall" data-user="<?= $get_id;?>">
 					<?php 

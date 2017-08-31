@@ -10,13 +10,13 @@ function initEvents(){
 
 	/*New js code end*/
 	/*changes from 19.07 start*/
-
+/*
 	$('.userprofile-image:not(.my-profile-image)>img').on('click', function(){
 		var url = $(this).attr('src');
 		$('#maine-photo-popup').find('.maine-popup-image>img').attr('src', url);
 		$('#maine-photo-popup').addClass('flex-wrapper');
 		fixBody();
-	});
+	});*/
 	$('.my-profile-image').on('click', function(){
 		var url = $('.my-profile-image-change').attr('src');
 		$('#profile-photo-popup').find('.image-profile-current>img').attr('src', url);
@@ -26,14 +26,45 @@ function initEvents(){
 	});
 	$( ".my-profile-image-change" ).hover(
 		function() {
-			$(this).next().toggleClass('hidden');
+			$(this).next().toggleClass('nonactive');
+			$('.tal label').css('display', 'block');
+			$('.btn-main-change').attr('id', 'button_resize');
 		}
 		);
 	$( ".my-profile-image" ).hover(
 		function() {
-			$(this).toggleClass('hidden');;
+			$(this).toggleClass('nonactive');
+			$('.tal label').css('display', 'block');
+			$('.btn-main-change').attr('id', 'button_resize');
 		}
 		);
+
+	$('.my-profile-image-owner').on('click', function(){
+		var url = $('#owner_image').attr('src');
+		$('#profile-photo-popup').find('.image-profile-current>img').attr('src', url);
+		$('#profile-photo-popup').addClass('flex-wrapper');
+
+		fixBody();
+	});
+
+	$('.my-profile-image-family').on('click', function(){
+		var url = $('#edit_famiy_image').attr('src');
+		$('#profile-photo-popup').find('.image-profile-current>img').attr('src', url);
+		$('#profile-photo-popup').addClass('flex-wrapper');
+
+		fixBody();
+	});
+
+	$('.my-profile-image-add-dog').on('click', function(){
+		var url = $('#add_image').attr('src');
+		$('#profile-photo-popup').find('.image-profile-current>img').attr('src', url);
+		$('#profile-photo-popup').addClass('flex-wrapper');
+
+		fixBody();
+	});
+
+
+
 	var drop = false;
 
 	$('.notifi-event-drop').on('click', function(e){
@@ -47,7 +78,7 @@ function initEvents(){
 				data.append("rem_event_active", 'true');
 
 				$.ajax({
-					url: "setpost",
+					url: "/application/Request/setpost.php",
 					type: "POST",
 					data: data,
 					processData: false,
@@ -70,7 +101,7 @@ function initEvents(){
 		data.append("get_all_event", 'true');
 
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -85,10 +116,36 @@ function initEvents(){
 
 	var url = window.location; 
 	var element = $('.nav-middle li a').filter(function() {
-		return this.href == url || url.href.indexOf(this.href) == 0; 
+		return url.indexOf($(this).href) || url.href.indexOf($(this).href) == 0; 
+		console.log(url.indexOf($(this).href));
 	}).addClass('menu-activ');
-	
+
+	setIdleFamily();
+	var rectImgArray;
+
+		$('.post-images-container').each(function(){
+			if ($(this).hasClass('multiple-images')){
+				if ($(this).hasClass('four-images') || $(this).hasClass('two-images')){
+					$(this).find('img').addClass('rectangularImg');
+				} else if ($(this).hasClass('three-images')){
+					$(this).find('img:not(:first)').addClass('rectangularImg');
+				}
+				rectImgArray = $(this).find('.rectangularImg');
+					rectImgArray.each(function(){
+						$(this).height($(this).width());
+					});
+			}
+		});
+
 }
+
+$('.sidebar').on('change', function(){
+	setIdleFamily();
+});
+
+$(window).resize(function(){
+	$('.rectangularImg').height($('.rectangularImg').width());
+})
 
 function auto_grow(element) {
 	element.style.height = "5px";
@@ -100,7 +157,7 @@ function pool_event(){
 	data.append("get_event", 'true');
 
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -119,9 +176,29 @@ function pool_event(){
 	});
 }
 
+function setIdleFamily() {
+	if (!$('.family').length){
+		$('.sidebar.tile').addClass('idle');
+	}
+	else{
+		$('.sidebar.tile').removeClass('idle');
+	}
+}
+
+
+
+$(document).on("mouseenter",'.comment', function() {
+	var parid = $(this).attr('id');
+	$('.remove_comment_' + parid).toggleClass('hidden');
+	console.log(parid); 
+}).on('mouseleave','.comment', function() {
+	var parid = $(this).attr('id');
+	$('.remove_comment_' + parid).toggleClass('hidden');
+	console.log(parid);
+});
 
 $(document).ready(function() {
-	//$.getScript('https://cdn.jsdelivr.net/sharer.js/latest/sharer.min.js');   // вызываем скрипт 
+
 	initShare();
 	initEvents();
 	pool_event();
@@ -155,6 +232,8 @@ $(document).ready(function() {
 
 	$(document).on('click','#discover_view', function() {
 		var max = $(this).attr('data-count');
+
+
 		discover_start = discover_start + 10;
 		discover_limit = discover_limit + 10;
 		if (max < 20) {
@@ -182,9 +261,9 @@ $(document).ready(function() {
 		data.append("location", location);
 		data.append("serch_agefrom", saf);
 		data.append("serch_ageto", sa);
-		
+
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -198,6 +277,31 @@ $(document).ready(function() {
 		});
 
 	});
+/*background-color: rgba(48, 55, 63, .05);*/
+	$(document).on('click', '#filter-accounts', function(){
+		var txt = $('.input-search-by-keyword').val();
+		if (txt.trim().length != 0) {
+			$(this).toggleClass('filter-category');
+			$('#filter-photos').removeClass('filter-category');
+			$('.users_wall_posts').toggleClass('hidden');
+			if ($('.list-element').hasClass('hidden')) {
+				$('.list-element').removeClass('hidden');
+			}
+		}
+	});
+
+	$(document).on('click', '#filter-photos', function(){
+		var txt = $('.input-search-by-keyword').val();
+		if (txt.trim().length != 0) {
+			$(this).toggleClass('filter-category');
+			$('#filter-accounts').removeClass('filter-category');
+			$('.list-element').toggleClass('hidden');
+			if ($('.users_wall_posts').hasClass('hidden')) {
+				$('.users_wall_posts').removeClass('hidden');
+
+			}
+		}
+	});
 
 	/*pagination*/
 
@@ -209,7 +313,15 @@ $(document).ready(function() {
 		var followmax = $(this).attr('data-count');
 		follow_start = follow_start + 10;
 		follow_limit = follow_start + 10;
-
+		if (followmax < 20) {
+			follow_limit = followmax;
+			$(this).css('display','none');
+		}
+		if (follow_limit > followmax) {
+			discovert = follow_limit - followmax;
+			follow_limit = follow_limit - discovert;
+			$(this).css('display','none');
+		}
 
 		if (follow_limit == followmax) {
 			$(this).css('display','none');
@@ -220,7 +332,7 @@ $(document).ready(function() {
 		data.append("follow_start", follow_start);
 		data.append("follow_limit", follow_limit);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -235,7 +347,7 @@ $(document).ready(function() {
 
 	});
 
-
+	
 
 });
 
@@ -243,10 +355,10 @@ $(document).ready(function() {
 /*----button show pop-up in edit post-----*/
 var plus_photo;
 
-function fileSelectHandler() {
+function fileSelectHandler(thiss) {
 
     // get selected file
-    var oFile = $('#maine_userfile')[0].files[0];
+    var oFile = $(thiss)[0].files[0];
     img = oFile;
     // hide all errors
     /*$('.error').hide();*/
@@ -280,22 +392,24 @@ function fileSelectHandler() {
         	var rh = oImage.naturalHeight; 
         	//alert(rw + ', ' + rh);
         	maxS = 1024/(rw/mw);
-        	minS = 80 /(rw/mw);
-        	if (rw < 450 ) {
-        		var maxS = rw;
-        		var minS = 80;
-        	}
-        	$('#maine_photo_image').imgAreaSelect({
-        		onSelectChange: function(img, selection){
+        	minS = 500 /(rw/mw);
+        	if (rw < 500 ) {
+        		alert("Choose a larger photo size!");
+        		return;
+/*        		var maxS = rw;
+var minS = 500;*/
+}
+$('#maine_photo_image').imgAreaSelect({
+	onSelectChange: function(img, selection){
 
-        		},
-        		handles: true,
-        		aspectRatio: '1:1',
-        		maxWidth: maxS, 
-        		maxHeight: maxS, 
-        		minWidth:minS,
-        		minHeight:minS,
-        		onSelectEnd: function (img, selection) {
+	},
+	handles: true,
+	aspectRatio: '1:1',
+	maxWidth: maxS, 
+	maxHeight: maxS, 
+	minWidth:minS,
+	minHeight:minS,
+	onSelectEnd: function (img, selection) {
         			//console.log('minmewW: ' + maxS + '; height: ' + minS + '; x1: '+ selection.x1 + '; y1: ' + selection.y1);
         			x1 = selection.x1;
         			y1 = selection.y1;
@@ -306,8 +420,8 @@ function fileSelectHandler() {
 
         	});
 
-        };
-    };
+};
+};
 
     // read selected file as DataURL
     oReader.readAsDataURL(oFile);
@@ -332,12 +446,109 @@ else {
   var rh = myimage.naturalHeight; 
 }
 //alert(w + ', h: ' + h + ', rw: ' + (rw/mw) + ', rh: ' + rh);
+if ($('#add-single-dog-popup').hasClass('flex-wrapper') || $('#edit-single-dog-popup').hasClass('flex-wrapper') ||  $('#edit-family-popup').hasClass('flex-wrapper') || $('#edit-owner-popup').hasClass('flex-wrapper')) {
+	var setup = 'setting_photo';
+} else {
+	var setup = 'main_photo';
+}
+
 
 var input = document.getElementById("maine_userfile");
+
+
 file = input.files[0];
 if (file != undefined) {
 	formData = new FormData();
 	if (!!file.type.match(/image.*/)) {
+		formData.append(setup, 'true');
+		formData.append("img", file);
+		formData.append('x1', x1 * (rw/mw));
+		formData.append('y1', y1 * (rh/mh));
+		formData.append('h', h * (rh/mh));
+		formData.append('w', w * (rw/mw));
+			/*formData.append('pid', dataArray.length);
+			*/
+			$.ajax({
+				url: "upload",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (data) {
+					
+					
+					if ($('#add-single-dog-popup').hasClass('flex-wrapper')){
+						console.log(data);
+						$('#add_image').attr('src', data);
+						$('.imgareaselect-outer').css('display', 'none');
+						$('.imgareaselect-selection').parent().css('display', 'none');
+						$('#profile-photo-popup').removeClass('flex-wrapper');
+
+					}else if ($('#edit-single-dog-popup').hasClass('flex-wrapper')) {
+						console.log(data);
+						$('.profile-edit-image-container #image').attr('src', data);
+						$('.imgareaselect-outer').css('display', 'none');
+						$('.imgareaselect-selection').parent().css('display', 'none');
+						$('#profile-photo-popup').removeClass('flex-wrapper');
+
+					}else if ($('#edit-family-popup').hasClass('flex-wrapper')) {
+
+						$('#edit_famiy_image').attr('src', data);
+						$('.imgareaselect-outer').css('display', 'none');
+						$('.imgareaselect-selection').parent().css('display', 'none');
+						$('#profile-photo-popup').removeClass('flex-wrapper');
+
+					}else if ($('#edit-owner-popup').hasClass('flex-wrapper')) {
+
+						$('#owner_image').attr('src', data);
+						$('.imgareaselect-outer').css('display', 'none');
+						$('.imgareaselect-selection').parent().css('display', 'none');
+						$('#profile-photo-popup').removeClass('flex-wrapper');
+
+					} else {
+						$('.my-profile-image img').attr('src', data);
+						$(".account-info .por #account-image").attr('src', data);
+						$('.popups-wrapper').removeClass('flex-wrapper');
+						$('body').css('overflow-y','auto');
+						$('.imgareaselect-outer').css('display', 'none');
+						$('.imgareaselect-selection').parent().css('display', 'none');
+						location.reload();
+						console.log(data);
+					}
+
+				}
+			});
+		} else {
+			alert('Not a valid image!');
+		}
+	}
+
+});
+
+$(document).on('click', '#button_resize_setting', function(){
+	var myimage = document.getElementById("maine_photo_image"); 
+	var mw = myimage.width;  
+	var mh = myimage.height;  
+	if (typeof myimage.naturalWidth == "undefined") { 
+  // IE 6/7/8 
+  var i = new Image(); 
+  i.src = myimage.src; 
+  var rw = i.width; 
+  var rh = i.height; 
+} 
+else { 
+  // HTML5 browsers 
+  var rw = myimage.naturalWidth; 
+  var rh = myimage.naturalHeight; 
+}
+//alert(w + ', h: ' + h + ', rw: ' + (rw/mw) + ', rh: ' + rh);
+
+var input = document.getElementById("add_userfile");
+file = input.files[0];
+if (file != undefined) {
+	formData = new FormData();
+	if (!!file.type.match(/image.*/)) {
+		formData.append("setting_photo", 'true');
 		formData.append("img", file);
 		formData.append('x1', x1 * (rw/mw));
 		formData.append('y1', y1 * (rh/mh));
@@ -353,19 +564,119 @@ if (file != undefined) {
 				contentType: false,
 				success: function (data) {
 					console.log(data);
-					$('.my-profile-image img').attr('src', data);
-					$('.popups-wrapper').removeClass('flex-wrapper');
-					$('body').css('overflow-y','auto');
+					$('#add_image').attr('src', data);
 					$('.imgareaselect-outer').css('display', 'none');
 					$('.imgareaselect-selection').parent().css('display', 'none');
-					location.reload();
+					$('#profile-photo-popup').removeClass('flex-wrapper');
 				}
 			});
 		} else {
 			alert('Not a valid image!');
 		}
 	}
+});
 
+
+$(document).on('click', '#button_resize_fam', function(){
+	var myimage = document.getElementById("maine_photo_image"); 
+	var mw = myimage.width;  
+	var mh = myimage.height;  
+	if (typeof myimage.naturalWidth == "undefined") { 
+  // IE 6/7/8 
+  var i = new Image(); 
+  i.src = myimage.src; 
+  var rw = i.width; 
+  var rh = i.height; 
+} 
+else { 
+  // HTML5 browsers 
+  var rw = myimage.naturalWidth; 
+  var rh = myimage.naturalHeight; 
+}
+//alert(w + ', h: ' + h + ', rw: ' + (rw/mw) + ', rh: ' + rh);
+
+var input = document.getElementById("family_userfile");
+file = input.files[0];
+if (file != undefined) {
+	formData = new FormData();
+	if (!!file.type.match(/image.*/)) {
+		formData.append("setting_photo", 'true');
+		formData.append("img", file);
+		formData.append('x1', x1 * (rw/mw));
+		formData.append('y1', y1 * (rh/mh));
+		formData.append('h', h * (rh/mh));
+		formData.append('w', w * (rw/mw));
+			/*formData.append('pid', dataArray.length);
+			*/
+			$.ajax({
+				url: "upload",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (data) {
+					console.log(data);
+					$('#family_add_image').attr('src', data);
+					$('.imgareaselect-outer').css('display', 'none');
+					$('.imgareaselect-selection').parent().css('display', 'none');
+					$('#profile-photo-popup').removeClass('flex-wrapper');
+				}
+			});
+		} else {
+			alert('Not a valid image!');
+		}
+	}
+});
+
+$(document).on('click', '#button_resize_pet', function(){
+	var myimage = document.getElementById("maine_photo_image"); 
+	var mw = myimage.width;  
+	var mh = myimage.height;  
+	if (typeof myimage.naturalWidth == "undefined") { 
+  // IE 6/7/8 
+  var i = new Image(); 
+  i.src = myimage.src; 
+  var rw = i.width; 
+  var rh = i.height; 
+} 
+else { 
+  // HTML5 browsers 
+  var rw = myimage.naturalWidth; 
+  var rh = myimage.naturalHeight; 
+}
+//alert(w + ', h: ' + h + ', rw: ' + (rw/mw) + ', rh: ' + rh);
+
+var input = document.getElementById("pet_userfile");
+file = input.files[0];
+if (file != undefined) {
+	formData = new FormData();
+	if (!!file.type.match(/image.*/)) {
+		formData.append("setting_photo", 'true');
+		formData.append("img", file);
+		formData.append('x1', x1 * (rw/mw));
+		formData.append('y1', y1 * (rh/mh));
+		formData.append('h', h * (rh/mh));
+		formData.append('w', w * (rw/mw));
+			/*formData.append('pid', dataArray.length);
+			*/
+			$.ajax({
+				url: "upload",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (data) {
+					console.log(data);
+					$('#pet_add_image').attr('src', data);
+					$('.imgareaselect-outer').css('display', 'none');
+					$('.imgareaselect-selection').parent().css('display', 'none');
+					$('#profile-photo-popup').removeClass('flex-wrapper');
+				}
+			});
+		} else {
+			alert('Not a valid image!');
+		}
+	}
 });
 /*-----end button-----*/
 /*------edit post-------*/
@@ -491,7 +802,7 @@ $(document).on('click','.edit_post_btn', function() {
 	data.append("edit_post_count_attach", srcimg.length);
 	data.append("edit_post_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -522,10 +833,12 @@ $(document).on('click','.follow-dogs', function() {
 	value = $(this).attr('id');
 
 	var parid = this.parentNode.id;
-	//post_data = {postid:parid, uid:value};
+	//post_data = {postid:parid, uid:value};account_image_popup_280
 	var scrim = $('#follow-dog-image_' + value).attr('src');
 	document.getElementById("account-image_" + parid).src = scrim; 
 	document.getElementById("newcomment-avatar_" + parid).src = scrim;
+	/*document.getElementById("account_image_popup_" + parid).src = scrim;
+	document.getElementById("newcomment_avatar_popup_" + parid).src = scrim;*/
 	document.getElementById('post_likes_' + parid).setAttribute('data-user', value);
 	chek_post_likes(value, parid);
 });
@@ -536,7 +849,7 @@ function chek_post_likes(value, idpost){
 	data.append("chek_post_likes_id", idpost);
 
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -590,7 +903,7 @@ $(document).on('click','.post_likes', function() {
 		data.append("post_likes_id", idpost);
 		data.append("post_user_owner", user_owner);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -624,7 +937,7 @@ function remove_like(value, idpost){
 	data.append("rem_post_likes_id", idpost);
 	
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -654,7 +967,7 @@ function check_following(){
 	var data =  new FormData();
 	data.append("check_follow", "true");
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -669,12 +982,20 @@ function check_following(){
 
 
 $(document).on('click','#add_following', function() {
+	var one = 0;
+	if ($(this).hasClass('follow_sidebar')){
+		one = 0;
+	} else {
+		one = 1;
+		
+	}
+
 	var parid = this.parentNode.id;
 	var data =  new FormData();
 	data.append("follow", "true");
 	data.append("parentNode_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -682,13 +1003,18 @@ $(document).on('click','#add_following', function() {
 		success: function (data) {
 			$('.state-unfollow_'+parid + ' #remove_following').css('display', 'block');
 			$('.state-follow_'+parid + ' #remove_following').css('display', 'block');
-			check_following();
+			if (one == 1) {
+				check_following();
+			}
+			
 		}
 	});
+
 	$(this).css('display', 'none');
 	//alert(this.parentNode.id);
 	//$(this).text("Follow");
 });
+
 
 /*----who to follow add------*/
 var timer1;
@@ -698,7 +1024,7 @@ $(document).on('click','#add_following_tofollow', function() {
 	data.append("follow", "true");
 	data.append("parentNode_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -730,7 +1056,7 @@ $(document).on('click','#removing_following_tofollow', function() {
 	data.append("remove_follow", "true");
 	data.append("parentNode_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -749,12 +1075,19 @@ $(document).on('click','#removing_following_tofollow', function() {
 /*----who to follow rem----*/
 
 $(document).on('click','#remove_following', function() {
+	var one = 0;
+	if ($(this).hasClass('follow_sidebar')){
+		one = 0;
+	} else {
+		one = 1;
+		
+	}
 	var parid = this.parentNode.id;
 	var data =  new FormData();
 	data.append("remove_follow", "true");
 	data.append("parentNode_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -763,12 +1096,16 @@ $(document).on('click','#remove_following', function() {
 			//console.log(data);
 			$('.state-unfollow_'+parid + ' #add_following').css('display', 'block');
 			$('.state-follow_'+parid + ' #add_following').css('display', 'block');
-			check_following();
+			if (one == 1) {
+				check_following();
+			}
 		}
 	});
 	$(this).css('display', 'none');
 	
 });
+
+
 /*-----end rem following-----*/
 
 /*-----remove comment-----*/
@@ -783,7 +1120,7 @@ $(document).on('click','#remove_comment', function() {
 	data_comment.append("count_comment", "true");
 	data_comment.append("count_post_id", idpost);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -793,11 +1130,11 @@ $(document).on('click','#remove_comment', function() {
 			//$(".comment_" + parid).remove();
 			console.log(data);
 			$(".comment_" + parid).children().css('display', 'none');
-			$(".comment_" + parid).append('<a href="#" class="link-blue no-margin undo_remove_comment">Undo removing</a>');
+			$(".comment_" + parid).append('<a href="#" class="link-blue no-margin undo_remove_comment undo_'+parid +'">Undo removing</a>');
 		}
 	});
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data_comment,
 		processData: false,
@@ -810,6 +1147,7 @@ $(document).on('click','#remove_comment', function() {
 
 		}
 	});
+	$(this).addClass('hidden');
 	
 });
 
@@ -819,7 +1157,7 @@ $(document).on('click','.undo_remove_comment', function() {
 	data.append("undo_removing_comment", "true");
 	data.append("undo_remove_comment_id", remove_comm[parid]);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -831,7 +1169,8 @@ $(document).on('click','.undo_remove_comment', function() {
 		}
 
 	});
-	this.remove();
+
+	$('.undo_' + parid).remove();
 });
 /*-----end comment-----*/
 
@@ -866,7 +1205,7 @@ $(document).on('click','.edit_comment_btn', function() {
 	data.append("edit_comment_txt", txt);
 	data.append("edit_comment_id", parid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -912,7 +1251,7 @@ $(document).on('click','#add_comment_wall', function() {
 		data_comment.append("count_comment", "true");
 		data_comment.append("count_post_id", idpost);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -923,7 +1262,7 @@ $(document).on('click','#add_comment_wall', function() {
 					}
 				});
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data_comment,
 			processData: false,
@@ -964,7 +1303,7 @@ $(document).on('keyup', '.text_add_comment', function(event){
 		data_comment.append("count_comment", "true");
 		data_comment.append("count_post_id", idpost);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -975,7 +1314,7 @@ $(document).on('keyup', '.text_add_comment', function(event){
 					}
 				});
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data_comment,
 			processData: false,
@@ -1013,7 +1352,7 @@ $(document).on('click','#add_comment_popup', function() {
 		data_comment.append("count_comment", "true");
 		data_comment.append("count_post_id", idpost);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -1024,7 +1363,7 @@ $(document).on('click','#add_comment_popup', function() {
 					}
 				});
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data_comment,
 			processData: false,
@@ -1065,7 +1404,7 @@ $(document).on('keyup', '.text_add_comment_popup', function(event){
 		data_comment.append("count_comment", "true");
 		data_comment.append("count_post_id", idpost);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -1076,7 +1415,7 @@ $(document).on('keyup', '.text_add_comment_popup', function(event){
 					}
 				});
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data_comment,
 			processData: false,
@@ -1106,7 +1445,7 @@ $(document).on('click','#send_email_btn', function() {
 	data.append("send_email_true", "true");
 	data.append("send_email_adress", send_e);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1128,6 +1467,7 @@ $(document).on('click','.follow-dog', function() {
 
 	var scrim = $('#follow-dog-image_' + send_e).attr('src');
 	document.getElementById("account-image").src = scrim; 
+	//$('.newpost-active-part #account-image')
 	/*document.getElementById("newpost-avatar").src = scrim; */
 	
 
@@ -1175,7 +1515,7 @@ $(document).on('click','#save_setting', function() {
 	data.append("settings_tumblr", settings_tumblr);
 	data.append("settings_goo", settings_goo);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1211,7 +1551,7 @@ function myFunction() {
 }
 /*-----end setting-----*/
 $(document).on('click','#save_setting_guest', function() {
-	var $input = $("#owner_userfile");
+	//var $input = $("#owner_userfile");
 	var oldimg = document.getElementById("owner_image").src;
 	var texty = oldimg.replace('http://petsoverload.yaskravo.net/img/avatar/','/');
 	var sett_location = document.getElementById("signup-location").value;
@@ -1221,10 +1561,10 @@ $(document).on('click','#save_setting_guest', function() {
 	var data =  new FormData();
 	data.append("sett_username", sett_username);
 	data.append("sett_location", sett_location);
-	data.append('img', $input.prop('files')[0]);
+	//data.append('img', $input.prop('files')[0]);
 	data.append('oldimg', texty);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1257,7 +1597,7 @@ $(document).on('click','#save_setting_guest', function() {
 
 /*--------edit family-------*/
 $(document).on('click','#edit_family', function() {
-	var $input = $("#edit_famiy_userfile");
+	//var $input = $("#edit_famiy_userfile");
 	var oldimg = document.getElementById("edit_famiy_image").src;
 	var texty = oldimg.replace('http://petsoverload.yaskravo.net/img/avatar/','/');
 	var username = document.getElementById("new_family_name").value;
@@ -1265,10 +1605,10 @@ $(document).on('click','#edit_family', function() {
 	var data =  new FormData();
 	data.append("edit_family_update", 'true');
 	data.append("edit_family_username", username);
-	data.append('img', $input.prop('files')[0]);
+	//data.append('img', $input.prop('files')[0]);
 	data.append('oldimg', texty);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1285,7 +1625,7 @@ $(document).on('click','#edit_family', function() {
 			$('.popups-wrapper').removeClass('flex-wrapper');
 			$('body').css('overflow-y','auto');
 			location.reload();
-
+			$('.task-img').remove();
 		}
 
 	});
@@ -1293,7 +1633,7 @@ $(document).on('click','#edit_family', function() {
 
 /*------add a pet------*/
 $(document).on('click','#add-new-dog', function() {
-	var $input = $("#add_userfile");
+	//var $input = $("#add_userfile");
 	var oldimg = document.getElementById("add_image").src;
 	var texty = oldimg.replace('http://petsoverload.yaskravo.net/img/avatar/','/');
 	var username = document.getElementById("add-username").value;
@@ -1308,10 +1648,10 @@ $(document).on('click','#add-new-dog', function() {
 		data.append("ajax_add_breed", breed);
 		data.append("ajax_add_datepi", datepi);
 		data.append("ajax_add_sex", sex);
-		data.append('img', $input.prop('files')[0]);
+		//data.append('img', $input.prop('files')[0]);
 		data.append('oldimg', texty);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -1326,8 +1666,10 @@ $(document).on('click','#add-new-dog', function() {
 				$('.task-img').remove();
 				$('.popups-wrapper').removeClass('flex-wrapper');
 				$('body').css('overflow-y','auto');
-				location.reload();
-
+				//location.reload();
+				$('.task-img').remove();
+				var url = "/id"+data;
+				$(location).attr('href',url);
 			}
 
 		});
@@ -1337,14 +1679,18 @@ $(document).on('click','#add-new-dog', function() {
 /*-----new family-----*/
 $(document).on('click','#new_family', function() {
 
-	var $inputpet = $("#pet_userfile");
-	var $inputfam = $("#family_userfile");
-	
+	//var $inputpet = $("#pet_userfile");
+	//var $inputfam = $("#family_userfile");
+	var oldfam = document.getElementById("family_add_image").src;
+	var textfam = oldfam.replace('http://petsoverload.yaskravo.net/img/avatar/','/');
+	var oldpet = document.getElementById("pet_add_image").src;
+	var textpet = oldpet.replace('http://petsoverload.yaskravo.net/img/avatar/','/');
 	var newfamily = document.getElementById("new-family-name").value;
 	var username = document.getElementById("new-username").value;
 	var breed = document.getElementById("new-breed").value;
 	var datepi = document.getElementById("newdatepicker").value;
 	var sex = document.getElementById("new-sex").value;
+	//console.log(oldfam + " -- "+oldpet);
 	if (newfamily !='' && username !='') {
 		this.disabled = true;
 		var data =  new FormData();
@@ -1354,10 +1700,12 @@ $(document).on('click','#new_family', function() {
 		data.append("ajax_new_breed", breed);
 		data.append("ajax_new_datepi", datepi);
 		data.append("ajax_new_sex", sex);
-		data.append('img', $inputpet.prop('files')[0]);
-		data.append('imgfamily', $inputfam.prop('files')[0]);
+		data.append("oldimgpet", textpet);
+		data.append("oldimfam", textfam);
+		//data.append('img', $inputpet.prop('files')[0]);
+		//data.append('imgfamily', $inputfam.prop('files')[0]);
 		$.ajax({
-			url: "setpost",
+			url: "/application/Request/setpost.php",
 			type: "POST",
 			data: data,
 			processData: false,
@@ -1372,7 +1720,10 @@ $(document).on('click','#new_family', function() {
 				$('.task-img').remove();
 				$('.popups-wrapper').removeClass('flex-wrapper');
 				$('body').css('overflow-y','auto');
-
+				//location.reload();
+				$('.task-img').remove();
+				var url = "/id"+data;
+				$(location).attr('href',url);
 			}
 		});
 	}
@@ -1393,43 +1744,45 @@ var apiGeolocationSuccess = function(position) {
 	/*alert("API geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
 	*/
 	var latlng = position.coords.latitude + ","+ position.coords.longitude;
-	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&sensor=false";
-	$.getJSON(url, function (data) {
-		for(var i=0;i<data.results.length;i++) {
-			var adress = data.results[1].formatted_address;
-
-		}
-		//console.log(adress);
-		document.getElementById('signup-location').value=adress;
-
+	var url_country= "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&result_type=country&key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo";
+	var url_city = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&result_type=locality&key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo";
+	$.getJSON(url_city, function (data) {
+		var adresscity = data.results[0].address_components[0].long_name;
+		// console.log(data.results[0].address_components[0].long_name);
+		//console.log(data.results[0].address_components[0].long_name);
+		$.getJSON(url_country, function (data) {
+			var adresscountry = data.results[0].address_components[0].long_name;
+			document.getElementById('signup-location').value = adresscity + ", "+adresscountry;
+		});
 	});
 };
 
 var tryAPIGeolocation = function() {
-	jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo ", function(success) {
+	jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo", function(success) {
 		apiGeolocationSuccess({coords: {latitude: success.location.lat, longitude: success.location.lng}});
 	})
 	.fail(function(err) {
 		alert("API Geolocation error! \n\n"+err);
 	});
-  /////
+  /////https://maps.googleapis.com/maps/api/geocode/json?latlng=48.5131793,35.116195999999995&result_type=country&key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo
 
 
-  /////
+  /////https://maps.googleapis.com/maps/api/geocode/json?latlng=48.5131793,35.116195999999995&result_type=locality&key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo
 };
 
 var browserGeolocationSuccess = function(position) {
 	var latlng = position.coords.latitude + ","+ position.coords.longitude;
-	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&sensor=false";
-	$.getJSON(url, function (data) {
-		for(var i=0;i<data.results.length;i++) {
-			var adress = data.results[1].formatted_address;
-			////console.log(data.results[i]);
-		}
-		
-		document.getElementById('signup-location').value=adress;
-		
+	var url_country= "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&result_type=country&key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo";
+	var url_city = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&result_type=locality&key=AIzaSyCW_9UZCIFyU6_bKOLB5v_7_V2JdQvr5Yo";
+	$.getJSON(url_city, function (data) {
+		var adresscity = data.results[0].address_components[0].long_name;
+		$.getJSON(url_country, function (data) {
+			var adresscountry = data.results[0].address_components[0].long_name;
+			document.getElementById('signup-location').value = adresscity + ", "+adresscountry;
+		});
 	});
+
+	
 };
 
 var browserGeolocationFail = function(error) {
@@ -1521,7 +1874,7 @@ $(document).on('click','#more_follow', function() {
 	data.append("follow_limits", follows_limit);
 
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1545,7 +1898,7 @@ $(document).on('click','#more_following', function() {
 	following_limit = following_limit + 10;
 	//alert(follow_start +', '+follow_limit);
 
-	if (following_limit == follow_max) {
+	if (following_limit >= follow_max) {
 		$(this).css('display','none');
 	}
 
@@ -1556,7 +1909,7 @@ $(document).on('click','#more_following', function() {
 	data.append("following_limits", following_limit);
 
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1599,7 +1952,7 @@ function comment_view(thiss, start, comment_limit, postid){
 	data.append("comment_limit", comment_limit);
 	data.append("comment_postid", postid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1623,6 +1976,7 @@ $(document).on('click','#view_more_post', function() {
 	post_view(this);
 	
 	initEvents();
+
 });
 
 function post_view(thiss){
@@ -1650,7 +2004,7 @@ function post_view(thiss){
 	data.append("scroll_uid", scroll_uid);
 
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1670,7 +2024,7 @@ $(document).on('click','#restore_password', function() {
 	data.append("restore_password", "true");
 	data.append("restore_email", email);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1684,14 +2038,25 @@ $(document).on('click','#restore_password', function() {
 
 });
 
-$(document).on('click', '.post-images-container>img, .userprofile-image:not(.my-profile-image)>img', function(){
+$(document).on('click', '.post-images-container>img, .my-profile-image-change', function(){
 	var url = $(this).attr('src');
-	
+	if ($(this).hasClass('nonephoto')) {
+		$('#profile-photo-popup').find('.image-profile-current>img').attr('src', url);
+		$('#profile-photo-popup').addClass('flex-wrapper');
+	} else {
+		
+	//console.log(url);
 	$('#post-photo-popup').find('.post-popup-image>img').attr('src', url);
 	$('#post-photo-popup').addClass('flex-wrapper');
 	$('body').css('overflow-y','hidden');
 	var parid = this.parentNode.parentNode.parentNode.parentNode.id;
-	ajax_post_photo_popup(parid, url);
+	if (parid == '') {
+		ajax_post_photo_popup_main(url);
+	} else {
+		ajax_post_photo_popup(parid, url);
+	}
+	
+}
 });
 
 function ajax_post_photo_popup(uid, url){
@@ -1701,7 +2066,25 @@ function ajax_post_photo_popup(uid, url){
 	data.append("ajax_post_photo_popup_id", uid);
 	data.append("ajax_post_photo_popup_url", url);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
+		type: "POST",
+		data: data,
+		processData: false,
+		contentType: false,
+		success: function (data) {
+				//console.log(data);
+				$('#post-photo-popup').append(data);
+
+			}
+		});
+}
+
+function ajax_post_photo_popup_main(url){
+	var data =  new FormData();
+
+	data.append("ajax_post_photo_popup_main_url", url);
+	$.ajax({
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1733,10 +2116,17 @@ $(document).on('click', '.post-share .share', function(e){
 	$(this).next().toggleClass('hidden');
 });
 
-$(document).on('click', '.account-image', function(e){
+$(document).on('click', '.post-account-menu', function(e){
 	e.preventDefault();
-	$(this).next().next().toggleClass('hidden');
-	$(this).toggleClass('activated');
+	$('.post-account-menu > .account-choice-dropdown').toggleClass('hidden');
+	$('.post-account-menu > .account-image').toggleClass('activated');
+
+});
+
+$(document).on('click', '.account-info', function(){
+
+	$('.account-info .por .account-choice-dropdown').toggleClass('hidden');
+	$('.account-info .por .account-image').toggleClass('activated');
 
 });
 
@@ -1787,8 +2177,17 @@ $(document).on('click', function(e) {
 	if (!$(e.target).closest(".notification-event").length) {
 		$('.notification-event .account-choice-dropdown').addClass('hidden');
 	}
-	e.stopPropagation();
-});
+	if (!$(e.target).closest("#search").length) {
+		$('.search-block').css('display', 'none');
+		$('#search').val(null);
+	}
+
+		/*if (!$(e.target).closest(".newpost").length) {
+			$(this).find('.newpost-active-part').addClass('hidden');
+		}*/
+
+		e.stopPropagation();
+	});
 
 $(document).on('focusin', '.newpost', function(){
 	$(this).addClass('active');
@@ -1827,7 +2226,7 @@ function ajax_popup(uid){
 	data.append("ajax_popup", 'true');
 	data.append("ajax_popup_uid", uid);
 	$.ajax({
-		url: "setpost",
+		url: "/application/Request/setpost.php",
 		type: "POST",
 		data: data,
 		processData: false,
@@ -1857,6 +2256,7 @@ $(document).on('click', '.tabs li', function(){
 	$(this).addClass('current');
 	$("#"+tab_id).addClass('current');
 });
+
 
 
 /* changes from 25.07 start*/
